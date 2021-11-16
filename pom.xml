@@ -78,6 +78,8 @@
         <groovy.version>3.0.9</groovy.version>
         <spock.version>2.1-M2-groovy-3.0</spock.version>
         <gmavenplus.version>1.13.0</gmavenplus.version>
+        <bytebuddy.version>1.12.1</bytebuddy.version>
+        <objenesis.version>3.2</objenesis.version>
         <surefire.version>3.0.0-M5</surefire.version>
     </properties>
 
@@ -94,6 +96,18 @@
                 <groupId>org.spockframework</groupId>
                 <artifactId>spock-core</artifactId>
                 <version>${spock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy</artifactId>
+                <version>${bytebuddy.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.objenesis</groupId>
+                <artifactId>objenesis</artifactId>
+                <version>${objenesis.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

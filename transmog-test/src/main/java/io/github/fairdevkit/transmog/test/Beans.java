@@ -24,12 +24,91 @@
 package io.github.fairdevkit.transmog.test;
 
 import io.github.fairdevkit.transmog.annotations.Predicate;
+import java.util.Collection;
 import lombok.Data;
 
 public class Beans implements Constants {
     @Data
+    public static class IntPropertyBean {
+        @Predicate(value = PREDICATE_VALUE, literal = true, datatype = "http://www.w3.org/2001/XMLSchema#int")
+        private int value;
+    }
+
+    @Data
+    public static class IntegerPropertyBean {
+        @Predicate(value = PREDICATE_VALUE, literal = true, datatype = "http://www.w3.org/2001/XMLSchema#int")
+        private Integer value;
+    }
+
+    @Data
     public static class StringPropertyBean {
         @Predicate(value = PREDICATE_VALUE, literal = true)
         private String value;
+    }
+
+    @Data
+    public static class IntArrayPropertyBean {
+        @Predicate(value = PREDICATE_VALUE, literal = true, datatype = "http://www.w3.org/2001/XMLSchema#int")
+        private int[] value;
+    }
+
+    @Data
+    public static class IntegerArrayPropertyBean {
+        @Predicate(value = PREDICATE_VALUE, literal = true, datatype = "http://www.w3.org/2001/XMLSchema#int")
+        private Integer[] value;
+    }
+
+    @Data
+    public static class StringArrayPropertyBean {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private String[] value;
+    }
+
+    @Data
+    public static class ParameterizedArrayPropertyBean<T> {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private T[] value;
+    }
+
+    @Data
+    public static class StringCollectionPropertyBean {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private Collection<String> value;
+    }
+
+    @Data
+    public static class ParameterizedCollectionPropertyBean<T> {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private Collection<T> value;
+    }
+
+    @Data
+    public static class ParameterizedNumberCollectionPropertyBean<T extends Number> {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private Collection<T> value;
+    }
+
+    @Data
+    public static class StringUpperBoundCollectionPropertyBean {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private Collection<? extends String> value;
+    }
+
+    @Data
+    public static class StringLowerBoundCollectionPropertyBean {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private Collection<? super String> value;
+    }
+
+    @Data
+    public static class WildcardCollectionPropertyBean {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private Collection<?> value;
+    }
+
+    @Data
+    public static class RawCollectionPropertyBean {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private Collection value;
     }
 }

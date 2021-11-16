@@ -37,6 +37,9 @@
     <version>${transmog.version}</version>
 
     <properties>
+        <!-- project settings -->
+        <spotbugs.excludeFilterFile>spotbugs-exclude.xml</spotbugs.excludeFilterFile>
+
         <!-- compile -->
         <lombok.version>1.18.22</lombok.version>
     </properties>

@@ -1,0 +1,3 @@
+io.github.fairdevkit.transmog.common.SingleArgumentStrategy$Factory
+io.github.fairdevkit.transmog.common.ArrayArgumentStrategy$Factory
+io.github.fairdevkit.transmog.common.CollectionArgumentStrategy$Factory
