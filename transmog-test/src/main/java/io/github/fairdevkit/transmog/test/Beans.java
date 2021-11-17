@@ -26,89 +26,146 @@ package io.github.fairdevkit.transmog.test;
 import io.github.fairdevkit.transmog.annotations.Predicate;
 import java.util.Collection;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-public class Beans implements Constants {
+public interface Beans extends Constants {
     @Data
-    public static class IntPropertyBean {
+    class IntPropertyBean {
         @Predicate(value = PREDICATE_VALUE, literal = true, datatype = "http://www.w3.org/2001/XMLSchema#int")
         private int value;
     }
 
     @Data
-    public static class IntegerPropertyBean {
+    class IntegerPropertyBean {
         @Predicate(value = PREDICATE_VALUE, literal = true, datatype = "http://www.w3.org/2001/XMLSchema#int")
         private Integer value;
     }
 
     @Data
-    public static class StringPropertyBean {
+    class BooleanPropertyBean {
+        @Predicate(value = PREDICATE_VALUE, literal = true, datatype = "http://www.w3.org/2001/XMLSchema#boolean")
+        private boolean value;
+    }
+
+    @Data
+    class StringPropertyBean {
         @Predicate(value = PREDICATE_VALUE, literal = true)
         private String value;
     }
 
     @Data
-    public static class IntArrayPropertyBean {
+    class IntArrayPropertyBean {
         @Predicate(value = PREDICATE_VALUE, literal = true, datatype = "http://www.w3.org/2001/XMLSchema#int")
         private int[] value;
     }
 
     @Data
-    public static class IntegerArrayPropertyBean {
+    class IntegerArrayPropertyBean {
         @Predicate(value = PREDICATE_VALUE, literal = true, datatype = "http://www.w3.org/2001/XMLSchema#int")
         private Integer[] value;
     }
 
     @Data
-    public static class StringArrayPropertyBean {
+    class StringArrayPropertyBean {
         @Predicate(value = PREDICATE_VALUE, literal = true)
         private String[] value;
     }
 
     @Data
-    public static class ParameterizedArrayPropertyBean<T> {
+    class ParameterizedArrayPropertyBean<T> {
         @Predicate(value = PREDICATE_VALUE, literal = true)
         private T[] value;
     }
 
     @Data
-    public static class StringCollectionPropertyBean {
+    class StringCollectionPropertyBean {
         @Predicate(value = PREDICATE_VALUE, literal = true)
         private Collection<String> value;
     }
 
     @Data
-    public static class ParameterizedCollectionPropertyBean<T> {
+    class ParameterizedCollectionPropertyBean<T> {
         @Predicate(value = PREDICATE_VALUE, literal = true)
         private Collection<T> value;
     }
 
     @Data
-    public static class ParameterizedNumberCollectionPropertyBean<T extends Number> {
+    class ParameterizedNumberCollectionPropertyBean<T extends Number> {
         @Predicate(value = PREDICATE_VALUE, literal = true)
         private Collection<T> value;
     }
 
     @Data
-    public static class StringUpperBoundCollectionPropertyBean {
+    class StringUpperBoundCollectionPropertyBean {
         @Predicate(value = PREDICATE_VALUE, literal = true)
         private Collection<? extends String> value;
     }
 
     @Data
-    public static class StringLowerBoundCollectionPropertyBean {
+    class StringLowerBoundCollectionPropertyBean {
         @Predicate(value = PREDICATE_VALUE, literal = true)
         private Collection<? super String> value;
     }
 
     @Data
-    public static class WildcardCollectionPropertyBean {
+    class WildcardCollectionPropertyBean {
         @Predicate(value = PREDICATE_VALUE, literal = true)
         private Collection<?> value;
     }
 
     @Data
-    public static class RawCollectionPropertyBean {
+    class RawCollectionPropertyBean {
         @Predicate(value = PREDICATE_VALUE, literal = true)
         private Collection value;
+    }
+
+    interface Invalid {
+        @Getter @Setter
+        class PrivateConstructor {
+            @Predicate(value = PREDICATE_VALUE, literal = true)
+            private String value;
+
+            private PrivateConstructor() {
+            }
+        }
+
+        @Data
+        class ArgConstructor {
+            @Predicate(value = PREDICATE_VALUE, literal = true)
+            private final String value;
+        }
+
+        @Setter
+        class AbsentGetter {
+            @Predicate(value = PREDICATE_VALUE, literal = true)
+            private String value;
+        }
+
+        @Getter
+        class AbsentSetter {
+            @Predicate(value = PREDICATE_VALUE, literal = true)
+            private String value;
+        }
+
+        @Data
+        class ThrowingConstructor {
+            @Predicate(value = PREDICATE_VALUE, literal = true)
+            private String value;
+
+            public ThrowingConstructor() {
+                throw new IllegalStateException("for testing");
+            }
+        }
+
+        @Data
+        class ThrowingMutator {
+            @Predicate(value = PREDICATE_VALUE, literal = true)
+            private String value;
+
+            public void setValue(String value) {
+                throw new IllegalStateException("for testing");
+            }
+        }
     }
 }

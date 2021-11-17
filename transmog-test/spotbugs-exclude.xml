@@ -1,6 +1,6 @@
 <FindBugsFilter>
     <Match>
         <Package name="io.github.fairdevkit.transmog.test"/>
-        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,URF_UNREAD_FIELD"/>
     </Match>
 </FindBugsFilter>
