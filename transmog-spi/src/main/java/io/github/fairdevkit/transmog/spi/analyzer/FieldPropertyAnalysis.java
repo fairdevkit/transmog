@@ -28,6 +28,7 @@ import io.github.fairdevkit.transmog.spi.reader.ValueConverter;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public abstract class FieldPropertyAnalysis<A extends Annotation> extends AnnotationPropertyAnalysis<A> {
     private final String name;
@@ -40,12 +41,12 @@ public abstract class FieldPropertyAnalysis<A extends Annotation> extends Annota
     protected FieldPropertyAnalysis(A annotation, String name, Class<?> type, MethodHandle accessor,
             ArgumentStrategy.Factory factory, ValueConverter<?> valueConverter, boolean nested) {
         super(annotation);
-        this.name = Objects.requireNonNull(name, "Field analysis property 'name' cannot be null");
-        this.type = Objects.requireNonNull(type, "Field analysis property 'type' cannot be null");
-        this.accessor = Objects.requireNonNull(accessor, "Field analysis property 'accessor' cannot be null");
-        this.factory = Objects.requireNonNull(factory, "Field analysis property 'factory' cannot be null");
-        this.valueConverter = Objects.requireNonNull(valueConverter, "Field analysis property 'valueConverter' cannot be null");
-        this.nested = Objects.requireNonNull(nested, "Field analysis property 'nested' cannot be null");
+        this.name = Objects.requireNonNull(name, errMsg("name"));
+        this.type = Objects.requireNonNull(type, errMsg("type"));
+        this.accessor = Objects.requireNonNull(accessor, errMsg("accessor"));
+        this.factory = Objects.requireNonNull(factory, errMsg("factory"));
+        this.valueConverter = Objects.requireNonNull(valueConverter, errMsg("valueConverter"));
+        this.nested = nested;
     }
 
     public String getName() {
@@ -70,6 +71,10 @@ public abstract class FieldPropertyAnalysis<A extends Annotation> extends Annota
 
     public boolean isNested() {
         return nested;
+    }
+
+    private static Supplier<String> errMsg(String prop) {
+        return () -> String.format("Field analysis property '%s' cannot be null", prop);
     }
 
     public static abstract class Builder<A extends Annotation> extends AnnotationPropertyAnalysis.Builder<A> {
