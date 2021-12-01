@@ -21,14 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.fairdevkit.transmog.test;
+package io.github.fairdevkit.transmog.record
 
-public interface Constants {
-    String NS = "http://example.com/";
-    String PREFIX = "ex";
+import io.github.fairdevkit.transmog.test.Beans
+import io.github.fairdevkit.transmog.test.Builders
+import io.github.fairdevkit.transmog.test.Records
+import spock.lang.Specification
 
-    String PREDICATE_VALUE = NS + "value";
+class RecordInstanceStrategyFactorySpec extends Specification {
+    /** System under test */
+    def factory = new RecordInstanceStrategy.Factory()
 
-    String LITERAL_FOO = "foo";
-    String LITERAL_BAR = "bar";
+    def "test for record type candidates"() {
+        expect:
+        factory.supports(type) == result
+
+        where:
+        type                                  || result
+        Beans.StringPropertyBean              || false
+        Builders.StringPropertyBuilder        || false
+        Records.StringPropertyRecord          || true
+        Records.DefaultValueConstructorRecord || true
+    }
 }

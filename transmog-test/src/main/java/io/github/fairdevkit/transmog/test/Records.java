@@ -28,4 +28,10 @@ import io.github.fairdevkit.transmog.annotations.Predicate;
 public interface Records extends Constants {
     record StringPropertyRecord(@Predicate(value = PREDICATE_VALUE, literal = true) String value) {
     }
+
+    record DefaultValueConstructorRecord(@Predicate(value = PREDICATE_VALUE, literal = true) String value) {
+        public DefaultValueConstructorRecord {
+            value = LITERAL_FOO;
+        }
+    }
 }

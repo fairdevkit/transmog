@@ -47,6 +47,7 @@
         <module>transmog-core</module>
         <module>transmog-support-common</module>
         <module>transmog-support-bean</module>
+        <module>transmog-support-record</module>
         <module>transmog-test</module>
     </modules>
 
