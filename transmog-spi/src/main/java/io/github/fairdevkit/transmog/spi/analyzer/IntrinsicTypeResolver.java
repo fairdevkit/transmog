@@ -24,9 +24,26 @@
 package io.github.fairdevkit.transmog.spi.analyzer;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.RecordComponent;
 
-public interface IntrinsicTypeResolver {
-    boolean supports(Field field);
+public interface IntrinsicTypeResolver<T> {
+    boolean supports(T type);
 
-    Class<?> resolve(Field field);
+    default boolean supports(Field field) {
+        return supports((T)field.getType());
+    }
+
+    default boolean supports(RecordComponent component) {
+        return supports((T)component.getType());
+    }
+
+    Class<?> resolve(T t);
+
+    default Class<?> resolve(Field field) {
+        return resolve((T)field.getType());
+    }
+
+    default Class<?> resolve(RecordComponent component) {
+        return resolve((T)component.getType());
+    }
 }

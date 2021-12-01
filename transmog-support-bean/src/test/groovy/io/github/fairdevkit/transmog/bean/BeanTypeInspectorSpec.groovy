@@ -24,50 +24,75 @@
 package io.github.fairdevkit.transmog.bean
 
 import io.github.fairdevkit.transmog.annotations.Predicate
+import io.github.fairdevkit.transmog.spi.analyzer.IntrinsicTypeResolver
 import io.github.fairdevkit.transmog.spi.analyzer.TransmogAnalyzerException
 import io.github.fairdevkit.transmog.test.Beans
+import io.github.fairdevkit.transmog.test.Builders
 import io.github.fairdevkit.transmog.test.Constants
+import io.github.fairdevkit.transmog.test.Records
 import spock.lang.Specification
+import java.util.stream.Stream
 
 class BeanTypeInspectorSpec extends Specification {
     /** System under test */
     def inspector = new BeanTypeInspector()
 
-    def "inspecting a bean type with an absent getter method"() {
+    // convenience closure
+    def resolver = { type = Object ->
+        Stream.of Mock(IntrinsicTypeResolver) {
+            supports(_) >> true
+            resolve(_) >> type
+        }
+    }
+
+    def "test for bean type candidates"() {
+        expect:
+        inspector.supports(type) == result
+
+        where:
+        type                           || result
+        Records.StringPropertyRecord   || false
+        Builders.StringPropertyBuilder || false
+        Beans.StringPropertyBean       || true
+    }
+
+    def "inspect a bean type with an absent getter method"() {
         when:
-        inspector.inspect Beans.Invalid.AbsentGetter, Predicate, { bldr, fld -> }
+        inspector.inspect Beans.Invalid.AbsentGetter, Predicate, resolver(), { bldr -> }
 
         then:
         def ex = thrown TransmogAnalyzerException
         ex.message == "Could not find getter method for bean ${Beans.Invalid.AbsentGetter}"
     }
 
-    def "inspecting a bean type with an absent setter method"() {
+    def "inspect a bean type with an absent setter method"() {
         when:
-        inspector.inspect Beans.Invalid.AbsentSetter, Predicate, { bldr, fld -> }
+        inspector.inspect Beans.Invalid.AbsentSetter, Predicate, resolver(), { bldr -> }
 
         then:
         def ex = thrown TransmogAnalyzerException
         ex.message == "Could not find setter method for bean ${Beans.Invalid.AbsentSetter}"
     }
 
-    def "inspecting a bean type containing a string property"() {
+    def "inspect a bean type containing a string property"() {
         expect:
-        inspector.inspect Beans.StringPropertyBean, Predicate, { bldr, fld ->
+        inspector.inspect Beans.StringPropertyBean, Predicate, resolver(String), { bldr ->
             assert bldr.annotation.value() == Constants.PREDICATE_VALUE
             assert bldr.name == "value"
             assert bldr.type == String
+            assert bldr.intrinsicType == String
             // TODO assert accessor value
             // TODO assert mutator value
         }
     }
 
-    def "inspecting a bean type containing a boolean property"() {
+    def "inspect a bean type containing a boolean property"() {
         expect:
-        inspector.inspect Beans.BooleanPropertyBean, Predicate, { bldr, fld ->
+        inspector.inspect Beans.BooleanPropertyBean, Predicate, resolver(boolean), { bldr ->
             assert bldr.annotation.value() == Constants.PREDICATE_VALUE
             assert bldr.name == "value"
             assert bldr.type == boolean
+            assert bldr.intrinsicType == boolean
         }
     }
 }

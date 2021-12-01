@@ -28,21 +28,24 @@ import io.github.fairdevkit.transmog.spi.reader.ValueConverter;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public abstract class FieldPropertyAnalysis<A extends Annotation> extends AnnotationPropertyAnalysis<A> {
     private final String name;
     private final Class<?> type;
+    private final Class<?> intrinsicType;
     private final MethodHandle accessor;
     private final ArgumentStrategy.Factory factory;
     private final ValueConverter<?> valueConverter;
     private final boolean nested;
 
-    protected FieldPropertyAnalysis(A annotation, String name, Class<?> type, MethodHandle accessor,
+    protected FieldPropertyAnalysis(A annotation, String name, Class<?> type, Class<?> intrinsicType, MethodHandle accessor,
             ArgumentStrategy.Factory factory, ValueConverter<?> valueConverter, boolean nested) {
         super(annotation);
         this.name = Objects.requireNonNull(name, errMsg("name"));
         this.type = Objects.requireNonNull(type, errMsg("type"));
+        this.intrinsicType = Objects.requireNonNull(intrinsicType, errMsg("intrinsicType"));
         this.accessor = Objects.requireNonNull(accessor, errMsg("accessor"));
         this.factory = Objects.requireNonNull(factory, errMsg("factory"));
         this.valueConverter = Objects.requireNonNull(valueConverter, errMsg("valueConverter"));
@@ -55,6 +58,10 @@ public abstract class FieldPropertyAnalysis<A extends Annotation> extends Annota
 
     public Class<?> getType() {
         return type;
+    }
+
+    public Class<?> getIntrinsicType() {
+        return intrinsicType;
     }
 
     public MethodHandle getAccessor() {
@@ -80,6 +87,7 @@ public abstract class FieldPropertyAnalysis<A extends Annotation> extends Annota
     public static abstract class Builder<A extends Annotation> extends AnnotationPropertyAnalysis.Builder<A> {
         protected String name;
         protected Class<?> type;
+        protected Class<?> intrinsicType;
         protected MethodHandle accessor;
         protected ArgumentStrategy.Factory factory;
         protected ValueConverter<?> valueConverter;
@@ -95,6 +103,11 @@ public abstract class FieldPropertyAnalysis<A extends Annotation> extends Annota
 
         public Builder<A> type(Class<?> type) {
             this.type = type;
+            return this;
+        }
+
+        public Builder<A> intrinsicType(Class<?> intrinsicType) {
+            this.intrinsicType = intrinsicType;
             return this;
         }
 
@@ -116,6 +129,14 @@ public abstract class FieldPropertyAnalysis<A extends Annotation> extends Annota
         public Builder<A> nested(boolean nested) {
             this.nested = nested;
             return this;
+        }
+
+        public Optional<Class<?>> peekType() {
+            return Optional.ofNullable(type);
+        }
+
+        public Optional<Class<?>> peekIntrinsicType() {
+            return Optional.ofNullable(intrinsicType);
         }
 
         public abstract FieldPropertyAnalysis<A> build();

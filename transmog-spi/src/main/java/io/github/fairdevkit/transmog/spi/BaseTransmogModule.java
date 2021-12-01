@@ -36,7 +36,7 @@ import java.util.Map;
 public class BaseTransmogModule implements TransmogModule {
     private final Collection<InstanceStrategy.Factory> instanceStrategies;
     private final Collection<TypeInspector> typeInspectors;
-    private final Collection<IntrinsicTypeResolver> intrinsicTypeResolvers;
+    private final Collection<IntrinsicTypeResolver<?>> intrinsicTypeResolvers;
     private final Collection<ArgumentStrategy.Factory> argumentStrategies;
     private final Map<Class<?>, ValueConverter<?>> valueConverters;
 
@@ -56,7 +56,7 @@ public class BaseTransmogModule implements TransmogModule {
         typeInspectors.add(inspector);
     }
 
-    public void addIntrinsicTypeResolver(IntrinsicTypeResolver resolver) {
+    public void addIntrinsicTypeResolver(IntrinsicTypeResolver<?> resolver) {
         intrinsicTypeResolvers.add(resolver);
     }
 

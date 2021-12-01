@@ -39,7 +39,7 @@ public interface TransmogModule {
         default void registerTypeInspector(TypeInspector inspector) {
         }
 
-        default void registerIntrinsicTypeResolver(IntrinsicTypeResolver resolver) {
+        default void registerIntrinsicTypeResolver(IntrinsicTypeResolver<?> resolver) {
         }
 
         default void registerArgumentStrategy(ArgumentStrategy.Factory factory) {

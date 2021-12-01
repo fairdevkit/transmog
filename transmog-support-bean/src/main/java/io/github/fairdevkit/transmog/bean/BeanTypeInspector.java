@@ -24,20 +24,21 @@
 package io.github.fairdevkit.transmog.bean;
 
 import io.github.fairdevkit.transmog.spi.analyzer.FieldPropertyAnalysis;
+import io.github.fairdevkit.transmog.spi.analyzer.IntrinsicTypeResolver;
 import io.github.fairdevkit.transmog.spi.analyzer.TransmogAnalyzerException;
 import io.github.fairdevkit.transmog.spi.analyzer.TypeInspector;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Optional;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class BeanTypeInspector extends BeanSupporting implements TypeInspector {
     @Override
     public <A extends Annotation> void inspect(Class<?> type, Class<A> annotationType,
-            BiConsumer<FieldPropertyAnalysis.Builder<A>, Field> consumer) {
+            Stream<IntrinsicTypeResolver<?>> resolvers, Consumer<FieldPropertyAnalysis.Builder<A>> consumer) {
         for (var field : type.getDeclaredFields()) {
             var capitalizedName = capitalize(field.getName());
 
@@ -66,6 +67,13 @@ public class BeanTypeInspector extends BeanSupporting implements TypeInspector {
 
             var builder = BeanPropertyAnalysis.<A>builder();
 
+            resolvers.filter(resolver -> resolver.supports(field))
+                    .findFirst()
+                    .map(resolver -> resolver.resolve(field))
+                    .ifPresentOrElse(builder::intrinsicType, () -> {
+                        builder.intrinsicType(field.getType());
+                    });
+
             annotation.map(builder::annotation);
 
             builder.mutator(getHandle(setter))
@@ -74,7 +82,7 @@ public class BeanTypeInspector extends BeanSupporting implements TypeInspector {
             builder.name(field.getName())
                     .type(field.getType());
 
-            consumer.accept(builder, field);
+            consumer.accept(builder);
         }
     }
 

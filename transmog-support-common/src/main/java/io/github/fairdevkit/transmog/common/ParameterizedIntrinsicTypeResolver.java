@@ -26,29 +26,46 @@ package io.github.fairdevkit.transmog.common;
 import io.github.fairdevkit.transmog.spi.analyzer.IntrinsicTypeResolver;
 import io.github.fairdevkit.transmog.spi.analyzer.TransmogAnalyzerException;
 import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.RecordComponent;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 
-public class ParameterizedIntrinsicTypeResolver implements IntrinsicTypeResolver {
+public class ParameterizedIntrinsicTypeResolver implements IntrinsicTypeResolver<AnnotatedType> {
     @Override
     public boolean supports(Field field) {
-        var annotatedType = field.getAnnotatedType();
+        return supports(field.getAnnotatedType());
+    }
 
+    @Override
+    public boolean supports(RecordComponent component) {
+        return supports(component.getAnnotatedType());
+    }
+
+    @Override
+    public boolean supports(AnnotatedType annotatedType) {
         if (!(annotatedType instanceof AnnotatedParameterizedType)) {
-            var type = (GenericDeclaration)annotatedType.getType();
+            var type = (GenericDeclaration) annotatedType.getType();
 
             return type.getTypeParameters().length > 0;
         }
-
         return true;
     }
 
     @Override
     public Class<?> resolve(Field field) {
-        var annotatedType = field.getAnnotatedType();
+        return resolve(field.getAnnotatedType());
+    }
 
+    @Override
+    public Class<?> resolve(RecordComponent component) {
+        return resolve(component.getAnnotatedType());
+    }
+
+    @Override
+    public Class<?> resolve(AnnotatedType annotatedType) {
         if (annotatedType instanceof AnnotatedParameterizedType parameterizedType) {
             var actualTypeArguments = parameterizedType.getAnnotatedActualTypeArguments();
 
@@ -85,7 +102,7 @@ public class ParameterizedIntrinsicTypeResolver implements IntrinsicTypeResolver
             }
 
             // non-parameterized type
-            throw new TransmogAnalyzerException("");//TODO
+            throw new TransmogAnalyzerException("nope");//TODO
         }
     }
 }

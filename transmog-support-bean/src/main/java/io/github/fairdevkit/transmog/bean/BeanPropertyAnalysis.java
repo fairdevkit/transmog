@@ -33,9 +33,9 @@ import java.util.Objects;
 public class BeanPropertyAnalysis<A extends Annotation> extends FieldPropertyAnalysis<A> {
     private final MethodHandle mutator;
 
-    private BeanPropertyAnalysis(A annotation, String name, Class<?> type, MethodHandle accessor,
+    private BeanPropertyAnalysis(A annotation, String name, Class<?> type, Class<?> intrinsicType, MethodHandle accessor,
             ArgumentStrategy.Factory factory, ValueConverter<?> valueConverter, boolean nested, MethodHandle mutator) {
-        super(annotation, name, type, accessor, factory, valueConverter, nested);
+        super(annotation, name, type, intrinsicType, accessor, factory, valueConverter, nested);
         this.mutator = Objects.requireNonNull(mutator, "Bean analysis property 'mutator' cannot be null");
     }
 
@@ -58,8 +58,9 @@ public class BeanPropertyAnalysis<A extends Annotation> extends FieldPropertyAna
             return this;
         }
 
+        @Override
         public BeanPropertyAnalysis<A> build() {
-            return new BeanPropertyAnalysis<>(annotation, name, type, accessor, factory, valueConverter, nested, mutator);
+            return new BeanPropertyAnalysis<>(annotation, name, type, intrinsicType, accessor, factory, valueConverter, nested, mutator);
         }
     }
 }

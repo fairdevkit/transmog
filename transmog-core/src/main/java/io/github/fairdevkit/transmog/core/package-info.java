@@ -21,18 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.fairdevkit.transmog.common;
 
-import io.github.fairdevkit.transmog.spi.analyzer.IntrinsicTypeResolver;
-
-public class ArrayIntrinsicTypeResolver implements IntrinsicTypeResolver<Class<?>> {
-    @Override
-    public boolean supports(Class<?> type) {
-        return type.isArray();
-    }
-
-    @Override
-    public Class<?> resolve(Class<?> type) {
-        return type.getComponentType();
-    }
-}
+@javax.annotation.ParametersAreNonnullByDefault
+package io.github.fairdevkit.transmog.core;

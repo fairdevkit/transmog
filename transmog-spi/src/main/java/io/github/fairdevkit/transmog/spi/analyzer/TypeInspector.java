@@ -24,12 +24,12 @@
 package io.github.fairdevkit.transmog.spi.analyzer;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public interface TypeInspector {
     boolean supports(Class<?> type);
 
     <A extends Annotation> void inspect(Class<?> type, Class<A> annotationType,
-            BiConsumer<FieldPropertyAnalysis.Builder<A>, Field> consumer);
+            Stream<IntrinsicTypeResolver<?>> resolvers, Consumer<FieldPropertyAnalysis.Builder<A>> consumer);
 }

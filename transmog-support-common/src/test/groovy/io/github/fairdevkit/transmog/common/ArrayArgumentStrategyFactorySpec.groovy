@@ -56,7 +56,7 @@ class ArrayArgumentStrategyFactorySpec extends Specification {
     def "strategy creation does not return null"() {
         setup:
         def property = Mock(FieldPropertyAnalysis) {
-            getType() >> Object
+            getIntrinsicType() >> Object
         }
 
         expect:

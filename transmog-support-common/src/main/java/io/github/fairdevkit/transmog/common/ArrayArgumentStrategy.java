@@ -70,7 +70,7 @@ public class ArrayArgumentStrategy implements ArgumentStrategy<Object[]> {
 
         @Override
         public ArgumentStrategy<?> create(FieldPropertyAnalysis<?> property, int size) {
-            return new ArrayArgumentStrategy(property.getType(), size);//TODO intrinsic type
+            return new ArrayArgumentStrategy(property.getIntrinsicType(), size);
         }
     }
 }

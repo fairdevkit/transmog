@@ -21,18 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.fairdevkit.transmog.common;
+package io.github.fairdevkit.transmog.core.util;
 
-import io.github.fairdevkit.transmog.spi.analyzer.IntrinsicTypeResolver;
+import java.util.regex.Pattern;
 
-public class ArrayIntrinsicTypeResolver implements IntrinsicTypeResolver<Class<?>> {
-    @Override
-    public boolean supports(Class<?> type) {
-        return type.isArray();
+public final class TransmogUtil {
+    private static final Pattern JDK_PATTERN = Pattern.compile("^java(x?)\\..+");
+
+    public static boolean isSystemClass(Class<?> clazz) {
+        if (clazz.isPrimitive()) {
+            return true;
+        }
+
+        if (clazz.isArray()) {
+            return isSystemClass(clazz.getComponentType());
+        }
+
+        return JDK_PATTERN.matcher(clazz.getPackageName()).matches();
     }
 
-    @Override
-    public Class<?> resolve(Class<?> type) {
-        return type.getComponentType();
+    private TransmogUtil() {
     }
 }

@@ -42,6 +42,7 @@ class BeanInstanceStrategySpec extends Specification {
             .mutator(MethodHandles.lookup().unreflect(findMethod(type, "setValue")))
             .name(name)
             .type(String)
+            .intrinsicType(String)
             .accessor(Mock(MethodHandle))
             .factory(Mock(ArgumentStrategy.Factory))
             .valueConverter(Mock(ValueConverter))

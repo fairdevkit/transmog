@@ -37,7 +37,7 @@ class FieldPropertyAnalysisSpec extends Specification {
         given:
         def builder = new FieldPropertyAnalysis.Builder() {
             FieldPropertyAnalysis build() {
-                new FieldPropertyAnalysis(annotation, name, type, accessor, factory, valueConverter, nested) {}
+                new FieldPropertyAnalysis(annotation, name, type, intrinsicType, accessor, factory, valueConverter, nested) {}
             }
         }
 
@@ -63,19 +63,25 @@ class FieldPropertyAnalysisSpec extends Specification {
         builder.type(Object).build()
         then:
         def ex4 = thrown NullPointerException
-        ex4.message == "Field analysis property 'accessor' cannot be null"
+        ex4.message == "Field analysis property 'intrinsicType' cannot be null"
+
+        when:
+        builder.intrinsicType(String).build()
+        then:
+        def ex5 = thrown NullPointerException
+        ex5.message == "Field analysis property 'accessor' cannot be null"
 
         when:
         builder.accessor(Mock(MethodHandle)).build()
         then:
-        def ex5 = thrown NullPointerException
-        ex5.message == "Field analysis property 'factory' cannot be null"
+        def ex6 = thrown NullPointerException
+        ex6.message == "Field analysis property 'factory' cannot be null"
 
         when:
         builder.factory(Mock(ArgumentStrategy.Factory)).build()
         then:
-        def ex6 = thrown NullPointerException
-        ex6.message == "Field analysis property 'valueConverter' cannot be null"
+        def ex7 = thrown NullPointerException
+        ex7.message == "Field analysis property 'valueConverter' cannot be null"
 
         when:
         def property = builder.valueConverter(Mock(ValueConverter)).build()
