@@ -120,6 +120,12 @@ public interface Beans extends Constants {
         private Collection value;
     }
 
+    @Data
+    class ReadonlyStringPropertyBean {
+        @Predicate(value = PREDICATE_VALUE, literal = true, readonly = true)
+        private String value;
+    }
+
     interface Invalid {
         @Getter @Setter
         class PrivateConstructor {

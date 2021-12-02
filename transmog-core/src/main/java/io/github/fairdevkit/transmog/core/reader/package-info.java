@@ -21,16 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.fairdevkit.transmog.test;
 
-public interface Constants {
-    String NS = "http://example.com/";
-    String PREFIX = "ex";
-
-    String PREDICATE_VALUE = NS + "value";
-
-    String TYPE_EXAMPLE = NS + "Example";
-
-    String LITERAL_FOO = "foo";
-    String LITERAL_BAR = "bar";
-}
+@javax.annotation.ParametersAreNonnullByDefault
+package io.github.fairdevkit.transmog.core.reader;
