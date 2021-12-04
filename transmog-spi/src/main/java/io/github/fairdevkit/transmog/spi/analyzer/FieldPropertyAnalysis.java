@@ -25,11 +25,13 @@ package io.github.fairdevkit.transmog.spi.analyzer;
 
 import io.github.fairdevkit.transmog.spi.reader.ArgumentStrategy;
 import io.github.fairdevkit.transmog.spi.reader.ValueConverter;
+import io.github.fairdevkit.transmog.spi.writer.WrapperHandler;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
 public abstract class FieldPropertyAnalysis<A extends Annotation> extends AnnotationPropertyAnalysis<A> {
     private final String name;
@@ -38,10 +40,12 @@ public abstract class FieldPropertyAnalysis<A extends Annotation> extends Annota
     private final MethodHandle accessor;
     private final ArgumentStrategy.Factory factory;
     private final ValueConverter<?> valueConverter;
+    @Nullable
+    private final WrapperHandler wrapperHandler;
     private final boolean nested;
 
     protected FieldPropertyAnalysis(A annotation, String name, Class<?> type, Class<?> intrinsicType, MethodHandle accessor,
-            ArgumentStrategy.Factory factory, ValueConverter<?> valueConverter, boolean nested) {
+            ArgumentStrategy.Factory factory, ValueConverter<?> valueConverter, WrapperHandler wrapperHandler, boolean nested) {
         super(annotation);
         this.name = Objects.requireNonNull(name, errMsg("name"));
         this.type = Objects.requireNonNull(type, errMsg("type"));
@@ -49,6 +53,7 @@ public abstract class FieldPropertyAnalysis<A extends Annotation> extends Annota
         this.accessor = Objects.requireNonNull(accessor, errMsg("accessor"));
         this.factory = Objects.requireNonNull(factory, errMsg("factory"));
         this.valueConverter = Objects.requireNonNull(valueConverter, errMsg("valueConverter"));
+        this.wrapperHandler = wrapperHandler;
         this.nested = nested;
     }
 
@@ -76,6 +81,10 @@ public abstract class FieldPropertyAnalysis<A extends Annotation> extends Annota
         return valueConverter;
     }
 
+    public Optional<WrapperHandler> getWrapperHandler() {
+        return Optional.ofNullable(wrapperHandler);
+    }
+
     public boolean isNested() {
         return nested;
     }
@@ -91,6 +100,7 @@ public abstract class FieldPropertyAnalysis<A extends Annotation> extends Annota
         protected MethodHandle accessor;
         protected ArgumentStrategy.Factory factory;
         protected ValueConverter<?> valueConverter;
+        protected WrapperHandler wrapperHandler;
         protected boolean nested;
 
         protected Builder() {
@@ -123,6 +133,11 @@ public abstract class FieldPropertyAnalysis<A extends Annotation> extends Annota
 
         public Builder<A> valueConverter(ValueConverter<?> valueConverter) {
             this.valueConverter = valueConverter;
+            return this;
+        }
+
+        public Builder<A> wrapperHandler(WrapperHandler wrapperHandler) {
+            this.wrapperHandler = wrapperHandler;
             return this;
         }
 

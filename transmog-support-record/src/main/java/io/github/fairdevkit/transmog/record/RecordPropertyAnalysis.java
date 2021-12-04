@@ -26,13 +26,14 @@ package io.github.fairdevkit.transmog.record;
 import io.github.fairdevkit.transmog.spi.analyzer.FieldPropertyAnalysis;
 import io.github.fairdevkit.transmog.spi.reader.ArgumentStrategy;
 import io.github.fairdevkit.transmog.spi.reader.ValueConverter;
+import io.github.fairdevkit.transmog.spi.writer.WrapperHandler;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 
 public class RecordPropertyAnalysis<A extends Annotation> extends FieldPropertyAnalysis<A> {
-    private RecordPropertyAnalysis(A annotation, String name, Class<?> type, Class<?> intrinsicType,
-            MethodHandle accessor, ArgumentStrategy.Factory factory, ValueConverter<?> valueConverter, boolean nested) {
-        super(annotation, name, type, intrinsicType, accessor, factory, valueConverter, nested);
+    private RecordPropertyAnalysis(A annotation, String name, Class<?> type, Class<?> intrinsicType, MethodHandle accessor,
+            ArgumentStrategy.Factory factory, ValueConverter<?> valueConverter, WrapperHandler wrapperHandler, boolean nested) {
+        super(annotation, name, type, intrinsicType, accessor, factory, valueConverter, wrapperHandler, nested);
     }
 
     public static <A extends Annotation> Builder<A> builder() {
@@ -45,7 +46,8 @@ public class RecordPropertyAnalysis<A extends Annotation> extends FieldPropertyA
 
         @Override
         public RecordPropertyAnalysis<A> build() {
-            return new RecordPropertyAnalysis<>(annotation, name, type, intrinsicType, accessor, factory, valueConverter, nested);
+            return new RecordPropertyAnalysis<>(annotation, name, type, intrinsicType, accessor, factory,
+                    valueConverter, wrapperHandler, nested);
         }
     }
 }

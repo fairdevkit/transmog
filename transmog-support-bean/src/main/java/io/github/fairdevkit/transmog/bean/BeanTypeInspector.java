@@ -27,18 +27,20 @@ import io.github.fairdevkit.transmog.spi.analyzer.FieldPropertyAnalysis;
 import io.github.fairdevkit.transmog.spi.analyzer.IntrinsicTypeResolver;
 import io.github.fairdevkit.transmog.spi.analyzer.TransmogAnalyzerException;
 import io.github.fairdevkit.transmog.spi.analyzer.TypeInspector;
+import io.github.fairdevkit.transmog.spi.writer.WrapperHandler;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class BeanTypeInspector extends BeanSupporting implements TypeInspector {
     @Override
     public <A extends Annotation> void inspect(Class<?> type, Class<A> annotationType,
-            Stream<IntrinsicTypeResolver<?>> resolvers, Consumer<FieldPropertyAnalysis.Builder<A>> consumer) {
+            Iterable<IntrinsicTypeResolver<?>> resolvers, Iterable<WrapperHandler> handlers,
+            Consumer<FieldPropertyAnalysis.Builder<A>> consumer) {
         for (var field : type.getDeclaredFields()) {
             var capitalizedName = capitalize(field.getName());
 
@@ -67,12 +69,18 @@ public class BeanTypeInspector extends BeanSupporting implements TypeInspector {
 
             var builder = BeanPropertyAnalysis.<A>builder();
 
-            resolvers.filter(resolver -> resolver.supports(field))
+            StreamSupport.stream(resolvers.spliterator(), false)
+                    .filter(resolver -> resolver.supports(field))
                     .findFirst()
                     .map(resolver -> resolver.resolve(field))
                     .ifPresentOrElse(builder::intrinsicType, () -> {
                         builder.intrinsicType(field.getType());
                     });
+
+            StreamSupport.stream(handlers.spliterator(), false)
+                    .filter(handler -> handler.supports(getter.getReturnType()))
+                    .findFirst()
+                    .ifPresent(builder::wrapperHandler);
 
             annotation.map(builder::annotation);
 

@@ -21,28 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.fairdevkit.transmog.core;
+package io.github.fairdevkit.transmog.common;
 
-import io.github.fairdevkit.transmog.spi.TransmogModule;
-import io.github.fairdevkit.transmog.spi.analyzer.IntrinsicTypeResolver;
-import io.github.fairdevkit.transmog.spi.analyzer.TypeInspector;
-import io.github.fairdevkit.transmog.spi.reader.ArgumentStrategy;
-import io.github.fairdevkit.transmog.spi.reader.InstanceStrategy;
 import io.github.fairdevkit.transmog.spi.writer.WrapperHandler;
-import java.util.ServiceLoader;
+import java.util.Optional;
 
-public class SpiTransmogModule implements TransmogModule {
+public class JavaOptionalWrapperHandler implements WrapperHandler {
     @Override
-    public void setup(Context context) {
-        ServiceLoader.load(InstanceStrategy.Factory.class)
-                .forEach(context::registerInstanceStrategy);
-        ServiceLoader.load(TypeInspector.class)
-                .forEach(context::registerTypeInspector);
-        ServiceLoader.load(IntrinsicTypeResolver.class)
-                .forEach(context::registerIntrinsicTypeResolver);
-        ServiceLoader.load(ArgumentStrategy.Factory.class)
-                .forEach(context::registerArgumentStrategy);
-        ServiceLoader.load(WrapperHandler.class)
-                .forEach(context::registerWrapperHandler);
+    public boolean supports(Class<?> type) {
+        return type.equals(Optional.class);
+    }
+
+    @Override
+    public <T, R> Optional<R> handle(T wrapper) {
+        return (Optional<R>)wrapper;
     }
 }

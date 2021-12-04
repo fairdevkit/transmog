@@ -23,13 +23,14 @@
  */
 package io.github.fairdevkit.transmog.spi.analyzer;
 
+import io.github.fairdevkit.transmog.spi.writer.WrapperHandler;
 import java.lang.annotation.Annotation;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 public interface TypeInspector {
     boolean supports(Class<?> type);
 
     <A extends Annotation> void inspect(Class<?> type, Class<A> annotationType,
-            Stream<IntrinsicTypeResolver<?>> resolvers, Consumer<FieldPropertyAnalysis.Builder<A>> consumer);
+            Iterable<IntrinsicTypeResolver<?>> resolvers, Iterable<WrapperHandler> handlers,
+            Consumer<FieldPropertyAnalysis.Builder<A>> consumer);
 }

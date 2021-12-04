@@ -26,6 +26,7 @@ package io.github.fairdevkit.transmog.bean
 import io.github.fairdevkit.transmog.annotations.Predicate
 import io.github.fairdevkit.transmog.spi.analyzer.IntrinsicTypeResolver
 import io.github.fairdevkit.transmog.spi.analyzer.TransmogAnalyzerException
+import io.github.fairdevkit.transmog.spi.writer.WrapperHandler
 import io.github.fairdevkit.transmog.test.Beans
 import io.github.fairdevkit.transmog.test.Builders
 import io.github.fairdevkit.transmog.test.Constants
@@ -39,10 +40,13 @@ class BeanTypeInspectorSpec extends Specification {
 
     // convenience closure
     def resolver = { type = Object ->
-        Stream.of Mock(IntrinsicTypeResolver) {
+        [ Mock(IntrinsicTypeResolver) {
             supports(_) >> true
             resolve(_) >> type
-        }
+        } ]
+    }
+    def handler = { type = Object ->
+        [ Mock(WrapperHandler) ]
     }
 
     def "test for bean type candidates"() {
@@ -58,7 +62,7 @@ class BeanTypeInspectorSpec extends Specification {
 
     def "inspect a bean type with an absent getter method"() {
         when:
-        inspector.inspect Beans.Invalid.AbsentGetter, Predicate, resolver(), { bldr -> }
+        inspector.inspect Beans.Invalid.AbsentGetter, Predicate, resolver(), handler(), { bldr -> }
 
         then:
         def ex = thrown TransmogAnalyzerException
@@ -67,7 +71,7 @@ class BeanTypeInspectorSpec extends Specification {
 
     def "inspect a bean type with an absent setter method"() {
         when:
-        inspector.inspect Beans.Invalid.AbsentSetter, Predicate, resolver(), { bldr -> }
+        inspector.inspect Beans.Invalid.AbsentSetter, Predicate, resolver(), handler(), { bldr -> }
 
         then:
         def ex = thrown TransmogAnalyzerException
@@ -76,7 +80,7 @@ class BeanTypeInspectorSpec extends Specification {
 
     def "inspect a bean type containing a string property"() {
         expect:
-        inspector.inspect Beans.StringPropertyBean, Predicate, resolver(String), { bldr ->
+        inspector.inspect Beans.StringPropertyBean, Predicate, resolver(String), handler(), { bldr ->
             assert bldr.annotation.value() == Constants.PREDICATE_VALUE
             assert bldr.name == "value"
             assert bldr.type == String
@@ -88,7 +92,7 @@ class BeanTypeInspectorSpec extends Specification {
 
     def "inspect a bean type containing a boolean property"() {
         expect:
-        inspector.inspect Beans.BooleanPropertyBean, Predicate, resolver(boolean), { bldr ->
+        inspector.inspect Beans.BooleanPropertyBean, Predicate, resolver(boolean), handler(), { bldr ->
             assert bldr.annotation.value() == Constants.PREDICATE_VALUE
             assert bldr.name == "value"
             assert bldr.type == boolean

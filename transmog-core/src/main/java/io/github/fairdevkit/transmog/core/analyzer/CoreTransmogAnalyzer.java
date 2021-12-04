@@ -38,6 +38,7 @@ import io.github.fairdevkit.transmog.spi.analyzer.TypeInspector;
 import io.github.fairdevkit.transmog.spi.reader.ArgumentStrategy;
 import io.github.fairdevkit.transmog.spi.reader.InstanceStrategy;
 import io.github.fairdevkit.transmog.spi.reader.ValueConverter;
+import io.github.fairdevkit.transmog.spi.writer.WrapperHandler;
 import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class CoreTransmogAnalyzer implements TransmogAnalyzer {
     private final Collection<IntrinsicTypeResolver<?>> intrinsicTypeResolvers;
     private final Collection<ArgumentStrategy.Factory> argumentStrategies;
     private final Map<Class<?>, ValueConverter<?>> valueConverters;
+    private final Collection<WrapperHandler> wrapperHandlers;
 
     public CoreTransmogAnalyzer() {
         cache = new ConcurrentHashMap<>();
@@ -66,6 +68,7 @@ public class CoreTransmogAnalyzer implements TransmogAnalyzer {
         intrinsicTypeResolvers = new ArrayList<>();
         argumentStrategies = new ArrayList<>();
         valueConverters = new HashMap<>();
+        wrapperHandlers = new ArrayList<>();
     }
 
     @Override
@@ -91,6 +94,11 @@ public class CoreTransmogAnalyzer implements TransmogAnalyzer {
     @Override
     public void registerValueConverter(Class<?> target, ValueConverter<?> converter) {
         valueConverters.put(target, converter);
+    }
+
+    @Override
+    public void registerWrapperHandler(WrapperHandler handler) {
+        wrapperHandlers.add(handler);
     }
 
     @Override
@@ -128,9 +136,9 @@ public class CoreTransmogAnalyzer implements TransmogAnalyzer {
                 .findFirst()
                 .orElseThrow(() -> new TransmogAnalyzerException("Could not find type inspector for " + clazz));
 
-        inspector.inspect(clazz, Predicate.class, intrinsicTypeResolvers.stream(), bldr -> consumeProperty(bldr, stack, builder::predicate));
-        inspector.inspect(clazz, Subject.class, intrinsicTypeResolvers.stream(), bldr -> consumeProperty(bldr, stack, builder::subject));
-        inspector.inspect(clazz, SemanticType.class, intrinsicTypeResolvers.stream(), bldr -> consumeProperty(bldr, stack, builder::type));
+        inspector.inspect(clazz, Predicate.class, intrinsicTypeResolvers, wrapperHandlers, bldr -> consumeProperty(bldr, stack, builder::predicate));
+        inspector.inspect(clazz, Subject.class, intrinsicTypeResolvers, wrapperHandlers, bldr -> consumeProperty(bldr, stack, builder::subject));
+        inspector.inspect(clazz, SemanticType.class, intrinsicTypeResolvers, wrapperHandlers, bldr -> consumeProperty(bldr, stack, builder::type));
 
         var analysis = builder.build();
         cache.put(clazz, analysis);

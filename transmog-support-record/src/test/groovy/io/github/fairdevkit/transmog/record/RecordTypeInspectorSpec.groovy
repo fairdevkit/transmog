@@ -25,6 +25,7 @@ package io.github.fairdevkit.transmog.record
 
 import io.github.fairdevkit.transmog.annotations.Predicate
 import io.github.fairdevkit.transmog.spi.analyzer.IntrinsicTypeResolver
+import io.github.fairdevkit.transmog.spi.writer.WrapperHandler
 import io.github.fairdevkit.transmog.test.Beans
 import io.github.fairdevkit.transmog.test.Builders
 import io.github.fairdevkit.transmog.test.Constants
@@ -38,10 +39,13 @@ class RecordTypeInspectorSpec extends Specification {
 
     // convenience closure
     def resolver = { type ->
-        Stream.of Mock(IntrinsicTypeResolver) {
+        [ Mock(IntrinsicTypeResolver) {
             supports(_) >> true
             resolve(_) >> type
-        }
+        } ]
+    }
+    def handler = { ->
+        [ Mock(WrapperHandler) ]
     }
 
     def "test for record type candidates"() {
@@ -57,7 +61,7 @@ class RecordTypeInspectorSpec extends Specification {
 
     def "inspect a record type containing a string property"() {
         expect:
-        inspector.inspect Records.StringPropertyRecord, Predicate, resolver(String), { bldr ->
+        inspector.inspect Records.StringPropertyRecord, Predicate, resolver(String), handler(), { bldr ->
             assert bldr.annotation.value() == Constants.PREDICATE_VALUE
             assert bldr.name == "value"
             assert bldr.type == String

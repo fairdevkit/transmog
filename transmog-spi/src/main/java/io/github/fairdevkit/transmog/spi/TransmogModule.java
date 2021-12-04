@@ -28,6 +28,7 @@ import io.github.fairdevkit.transmog.spi.analyzer.TypeInspector;
 import io.github.fairdevkit.transmog.spi.reader.ArgumentStrategy;
 import io.github.fairdevkit.transmog.spi.reader.InstanceStrategy;
 import io.github.fairdevkit.transmog.spi.reader.ValueConverter;
+import io.github.fairdevkit.transmog.spi.writer.WrapperHandler;
 
 public interface TransmogModule {
     void setup(Context context);
@@ -46,6 +47,9 @@ public interface TransmogModule {
         }
 
         default void registerValueConverter(Class<?> target, ValueConverter<?> converter) {
+        }
+
+        default void registerWrapperHandler(WrapperHandler handler) {
         }
     }
 }

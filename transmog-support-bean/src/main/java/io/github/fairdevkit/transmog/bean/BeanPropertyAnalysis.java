@@ -26,6 +26,7 @@ package io.github.fairdevkit.transmog.bean;
 import io.github.fairdevkit.transmog.spi.analyzer.FieldPropertyAnalysis;
 import io.github.fairdevkit.transmog.spi.reader.ArgumentStrategy;
 import io.github.fairdevkit.transmog.spi.reader.ValueConverter;
+import io.github.fairdevkit.transmog.spi.writer.WrapperHandler;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.util.Objects;
@@ -34,8 +35,9 @@ public class BeanPropertyAnalysis<A extends Annotation> extends FieldPropertyAna
     private final MethodHandle mutator;
 
     private BeanPropertyAnalysis(A annotation, String name, Class<?> type, Class<?> intrinsicType, MethodHandle accessor,
-            ArgumentStrategy.Factory factory, ValueConverter<?> valueConverter, boolean nested, MethodHandle mutator) {
-        super(annotation, name, type, intrinsicType, accessor, factory, valueConverter, nested);
+            ArgumentStrategy.Factory factory, ValueConverter<?> valueConverter, WrapperHandler wrapperHandler,
+            boolean nested, MethodHandle mutator) {
+        super(annotation, name, type, intrinsicType, accessor, factory, valueConverter, wrapperHandler, nested);
         this.mutator = Objects.requireNonNull(mutator, "Bean analysis property 'mutator' cannot be null");
     }
 
@@ -60,7 +62,8 @@ public class BeanPropertyAnalysis<A extends Annotation> extends FieldPropertyAna
 
         @Override
         public BeanPropertyAnalysis<A> build() {
-            return new BeanPropertyAnalysis<>(annotation, name, type, intrinsicType, accessor, factory, valueConverter, nested, mutator);
+            return new BeanPropertyAnalysis<>(annotation, name, type, intrinsicType, accessor, factory, valueConverter,
+                    wrapperHandler, nested, mutator);
         }
     }
 }

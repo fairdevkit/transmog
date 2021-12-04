@@ -24,7 +24,9 @@
 package io.github.fairdevkit.transmog.test;
 
 import io.github.fairdevkit.transmog.annotations.Predicate;
+import io.github.fairdevkit.transmog.annotations.SemanticType;
 import java.util.Collection;
+import java.util.Optional;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -124,6 +126,24 @@ public interface Beans extends Constants {
     class ReadonlyStringPropertyBean {
         @Predicate(value = PREDICATE_VALUE, literal = true, readonly = true)
         private String value;
+    }
+
+    @Data
+    class OptionalStringPropertyBean {
+        @Predicate(value = PREDICATE_VALUE, literal = true, required = false)
+        private String value;
+
+        public Optional<String> getValue() {
+            return Optional.ofNullable(value);
+        }
+    }
+
+    @Data
+    class StringAndBooleanPropertiesBean {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private String value;
+        @Predicate(value = PREDICATE_FLAG, literal = true, datatype = "http://www.w3.org/2001/XMLSchema#boolean")
+        private boolean flag;
     }
 
     interface Invalid {

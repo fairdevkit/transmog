@@ -21,23 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.fairdevkit.transmog.annotations;
+package io.github.fairdevkit.transmog.spi.writer;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Optional;
 
-@Target({ ElementType.TYPE, ElementType.RECORD_COMPONENT, ElementType.FIELD })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface Subject {
-    String value() default "";
+public interface WrapperHandler {
+    boolean supports(Class<?> type);
 
-    boolean relative() default false;
-
-    char separator() default '#';
-
-    boolean blankNode() default false;
+    <T, R> Optional<R> handle(T wrapper);
 }

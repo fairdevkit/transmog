@@ -23,26 +23,38 @@
  */
 package io.github.fairdevkit.transmog.core;
 
-import io.github.fairdevkit.transmog.spi.TransmogModule;
-import io.github.fairdevkit.transmog.spi.analyzer.IntrinsicTypeResolver;
-import io.github.fairdevkit.transmog.spi.analyzer.TypeInspector;
-import io.github.fairdevkit.transmog.spi.reader.ArgumentStrategy;
-import io.github.fairdevkit.transmog.spi.reader.InstanceStrategy;
-import io.github.fairdevkit.transmog.spi.writer.WrapperHandler;
-import java.util.ServiceLoader;
+import io.github.fairdevkit.transmog.spi.BaseTransmogModule;
+import java.util.ArrayList;
+import java.util.Collection;
+import org.eclipse.rdf4j.model.Namespace;
+import org.eclipse.rdf4j.model.impl.SimpleNamespace;
 
-public class SpiTransmogModule implements TransmogModule {
+public class CoreTransmogModule extends BaseTransmogModule {
+    private final Collection<Namespace> namespaces;
+
+    public CoreTransmogModule() {
+        namespaces = new ArrayList<>();
+    }
+
+    public void addNamespace(Namespace ns) {
+        namespaces.add(ns);
+    }
+
+    public void addNamespace(String prefix, String namespace) {
+        namespaces.add(new SimpleNamespace(prefix, namespace));
+    }
+
     @Override
     public void setup(Context context) {
-        ServiceLoader.load(InstanceStrategy.Factory.class)
-                .forEach(context::registerInstanceStrategy);
-        ServiceLoader.load(TypeInspector.class)
-                .forEach(context::registerTypeInspector);
-        ServiceLoader.load(IntrinsicTypeResolver.class)
-                .forEach(context::registerIntrinsicTypeResolver);
-        ServiceLoader.load(ArgumentStrategy.Factory.class)
-                .forEach(context::registerArgumentStrategy);
-        ServiceLoader.load(WrapperHandler.class)
-                .forEach(context::registerWrapperHandler);
+        super.setup(context);
+
+        if (context instanceof CoreContext ctx) {
+            namespaces.forEach(ctx::registerNamespace);
+        }
+    }
+
+    public static interface CoreContext extends Context {
+        default void registerNamespace(Namespace ns) {
+        }
     }
 }

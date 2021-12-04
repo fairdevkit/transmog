@@ -37,7 +37,7 @@ class FieldPropertyAnalysisSpec extends Specification {
         given:
         def builder = new FieldPropertyAnalysis.Builder() {
             FieldPropertyAnalysis build() {
-                new FieldPropertyAnalysis(annotation, name, type, intrinsicType, accessor, factory, valueConverter, nested) {}
+                new FieldPropertyAnalysis(annotation, name, type, intrinsicType, accessor, factory, valueConverter, wrapperHandler, nested) {}
             }
         }
 

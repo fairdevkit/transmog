@@ -23,11 +23,16 @@
  */
 package io.github.fairdevkit.transmog.test;
 
+import org.eclipse.rdf4j.model.Namespace;
+import org.eclipse.rdf4j.model.impl.SimpleNamespace;
+
 public interface Constants {
     String NS = "http://example.com/";
     String PREFIX = "ex";
+    Namespace NAMESPACE = new SimpleNamespace(PREFIX, NS);
 
     String PREDICATE_VALUE = NS + "value";
+    String PREDICATE_FLAG = NS + "flag";
 
     String TYPE_EXAMPLE = NS + "Example";
 

@@ -27,12 +27,13 @@ import io.github.fairdevkit.transmog.spi.analyzer.FieldPropertyAnalysis;
 import io.github.fairdevkit.transmog.spi.analyzer.IntrinsicTypeResolver;
 import io.github.fairdevkit.transmog.spi.analyzer.TransmogAnalyzerException;
 import io.github.fairdevkit.transmog.spi.analyzer.TypeInspector;
+import io.github.fairdevkit.transmog.spi.writer.WrapperHandler;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class RecordTypeInspector implements TypeInspector {
     @Override
@@ -42,7 +43,8 @@ public class RecordTypeInspector implements TypeInspector {
 
     @Override
     public <A extends Annotation> void inspect(Class<?> type, Class<A> annotationType,
-            Stream<IntrinsicTypeResolver<?>> resolvers, Consumer<FieldPropertyAnalysis.Builder<A>> consumer) {
+            Iterable<IntrinsicTypeResolver<?>> resolvers, Iterable<WrapperHandler> handlers,
+            Consumer<FieldPropertyAnalysis.Builder<A>> consumer) {
         for (var component : type.getRecordComponents()) {
             if (!component.isAnnotationPresent(annotationType)) {
                 continue;
@@ -50,7 +52,8 @@ public class RecordTypeInspector implements TypeInspector {
 
             var builder = RecordPropertyAnalysis.<A>builder();
 
-            resolvers.filter(resolver -> resolver.supports(component))
+            StreamSupport.stream(resolvers.spliterator(), false)
+                    .filter(resolver -> resolver.supports(component))
                     .findFirst()
                     .map(resolver -> resolver.resolve(component))
                     .ifPresentOrElse(builder::intrinsicType, () -> {

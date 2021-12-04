@@ -21,23 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.fairdevkit.transmog.annotations;
+package io.github.fairdevkit.transmog.spi.writer;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public class TransmogWriterException extends RuntimeException {
+    public TransmogWriterException(String message) {
+        super(message);
+    }
 
-@Target({ ElementType.TYPE, ElementType.RECORD_COMPONENT, ElementType.FIELD })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface Subject {
-    String value() default "";
-
-    boolean relative() default false;
-
-    char separator() default '#';
-
-    boolean blankNode() default false;
+    public TransmogWriterException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
