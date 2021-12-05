@@ -52,9 +52,13 @@ public class CoreTransmogReader implements TransmogReader<InputStream> {
 
     @Override
     public <T> Optional<T> read(InputStream source, Class<T> clazz, CharSequence subject) {
+        return read(source, clazz, subject, RDFFormat.TURTLE);
+    }
+
+    public <T> Optional<T> read(InputStream source, Class<T> clazz, CharSequence subject, RDFFormat format) {
         final Model model;
         try {
-            model = Rio.parse(source, RDFFormat.TURTLE);
+            model = Rio.parse(source, format);
         } catch (IOException | RDFParseException e) {
             throw new TransmogReaderException("Could not read source RDF data", e);
         }

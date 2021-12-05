@@ -21,40 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.fairdevkit.transmog.core;
 
-import io.github.fairdevkit.transmog.spi.BaseTransmogModule;
-import java.util.ArrayList;
-import java.util.Collection;
-import org.eclipse.rdf4j.model.Namespace;
-import org.eclipse.rdf4j.model.impl.SimpleNamespace;
-
-public class CoreTransmogModule extends BaseTransmogModule {
-    private final Collection<Namespace> namespaces;
-
-    public CoreTransmogModule() {
-        namespaces = new ArrayList<>();
-    }
-
-    public void addNamespace(Namespace ns) {
-        namespaces.add(ns);
-    }
-
-    public void addNamespace(String prefix, String namespace) {
-        namespaces.add(new SimpleNamespace(prefix, namespace));
-    }
-
-    @Override
-    public void setup(Context context) {
-        super.setup(context);
-
-        if (context instanceof CoreContext ctx) {
-            namespaces.forEach(ctx::registerNamespace);
-        }
-    }
-
-    public interface CoreContext extends Context {
-        default void registerNamespace(Namespace ns) {
-        }
-    }
-}
+@javax.annotation.ParametersAreNonnullByDefault
+package io.github.fairdevkit.transmog.api;

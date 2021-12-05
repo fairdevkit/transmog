@@ -21,40 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.fairdevkit.transmog.core;
+package io.github.fairdevkit.transmog.api;
 
-import io.github.fairdevkit.transmog.spi.BaseTransmogModule;
-import java.util.ArrayList;
-import java.util.Collection;
-import org.eclipse.rdf4j.model.Namespace;
-import org.eclipse.rdf4j.model.impl.SimpleNamespace;
+import io.github.fairdevkit.transmog.api.reader.TransmogReader;
+import io.github.fairdevkit.transmog.api.writer.TransmogWriter;
+import io.github.fairdevkit.transmog.spi.TransmogModule;
+import io.github.fairdevkit.transmog.spi.TransmogModuleProvider;
+import java.util.ServiceLoader;
 
-public class CoreTransmogModule extends BaseTransmogModule {
-    private final Collection<Namespace> namespaces;
+public interface TransmogMapper<Source, Sink> extends TransmogReader<Source>, TransmogWriter<Sink> {
+    void addModule(TransmogModule module);
 
-    public CoreTransmogModule() {
-        namespaces = new ArrayList<>();
-    }
-
-    public void addNamespace(Namespace ns) {
-        namespaces.add(ns);
-    }
-
-    public void addNamespace(String prefix, String namespace) {
-        namespaces.add(new SimpleNamespace(prefix, namespace));
-    }
-
-    @Override
-    public void setup(Context context) {
-        super.setup(context);
-
-        if (context instanceof CoreContext ctx) {
-            namespaces.forEach(ctx::registerNamespace);
-        }
-    }
-
-    public interface CoreContext extends Context {
-        default void registerNamespace(Namespace ns) {
-        }
+    default void discoverModules() {
+        ServiceLoader.load(TransmogModuleProvider.class)
+                .forEach(provider -> {
+                    addModule(provider.get());
+                });
     }
 }

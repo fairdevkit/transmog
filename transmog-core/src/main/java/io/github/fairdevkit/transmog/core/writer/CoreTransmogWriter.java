@@ -67,6 +67,10 @@ public class CoreTransmogWriter implements TransmogWriter<OutputStream>, CoreTra
 
     @Override
     public void write(Object source, OutputStream sink, CharSequence subject) {
+        write(source, sink, subject, RDFFormat.TURTLE);
+    }
+
+    public void write(Object source, OutputStream sink, CharSequence subject, RDFFormat format) {
         var analysis = analyzer.analyze(source);
         var iri = Values.iri(subject.toString());
 
@@ -76,7 +80,7 @@ public class CoreTransmogWriter implements TransmogWriter<OutputStream>, CoreTra
         writeInternal(model, source, analysis, iri);
 
         try {
-            Rio.write(model, sink, RDFFormat.TURTLE);
+            Rio.write(model, sink, format);
         } catch (RDFHandlerException e) {
             throw new TransmogWriterException("", e);//TODO
         }
