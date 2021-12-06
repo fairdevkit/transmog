@@ -23,8 +23,9 @@
  */
 package io.github.fairdevkit.transmog.api.writer;
 
+import io.github.fairdevkit.transmog.api.Configurable;
 import io.github.fairdevkit.transmog.spi.TransmogModule;
 
-public interface TransmogWriter<Sink> extends TransmogModule.Context {
+public interface TransmogWriter<Sink> extends TransmogModule.Context, Configurable {
     void write(Object source, Sink sink, CharSequence subject);
 }

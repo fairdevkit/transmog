@@ -25,8 +25,10 @@ package io.github.fairdevkit.transmog.core.writer;
 
 import io.github.fairdevkit.transmog.annotations.Predicate;
 import io.github.fairdevkit.transmog.annotations.SemanticType;
+import io.github.fairdevkit.transmog.api.TransmogConfig;
 import io.github.fairdevkit.transmog.api.analyzer.TransmogAnalyzer;
 import io.github.fairdevkit.transmog.api.writer.TransmogWriter;
+import io.github.fairdevkit.transmog.core.CoreSettings;
 import io.github.fairdevkit.transmog.core.CoreTransmogModule;
 import io.github.fairdevkit.transmog.spi.analyzer.ClassAnalysis;
 import io.github.fairdevkit.transmog.spi.analyzer.FieldPropertyAnalysis;
@@ -46,6 +48,8 @@ import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.Rio;
+import org.eclipse.rdf4j.rio.WriterConfig;
+import org.eclipse.rdf4j.rio.helpers.BasicWriterSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,10 +58,19 @@ public class CoreTransmogWriter implements TransmogWriter<OutputStream>, CoreTra
 
     private final TransmogAnalyzer analyzer;
     private final Collection<Namespace> namespaces;
+    private final WriterConfig writerConfig;
+    private TransmogConfig config;
 
     public CoreTransmogWriter(TransmogAnalyzer analyzer) {
+        this(analyzer, new TransmogConfig());
+    }
+
+    public CoreTransmogWriter(TransmogAnalyzer analyzer, TransmogConfig config) {
         this.analyzer = analyzer;
         namespaces = new ArrayList<>();
+
+        writerConfig = new WriterConfig();
+        configure(config);
     }
 
     @Override
@@ -66,8 +79,15 @@ public class CoreTransmogWriter implements TransmogWriter<OutputStream>, CoreTra
     }
 
     @Override
+    public void configure(TransmogConfig config) {
+        this.config = config;
+
+        writerConfig.set(BasicWriterSettings.INLINE_BLANK_NODES, config.get(CoreSettings.INLINE_BNODES));
+    }
+
+    @Override
     public void write(Object source, OutputStream sink, CharSequence subject) {
-        write(source, sink, subject, RDFFormat.TURTLE);
+        write(source, sink, subject, config.get(CoreSettings.DEFAULT_WRITE_FORMAT));
     }
 
     public void write(Object source, OutputStream sink, CharSequence subject, RDFFormat format) {
@@ -80,7 +100,7 @@ public class CoreTransmogWriter implements TransmogWriter<OutputStream>, CoreTra
         writeInternal(model, source, analysis, iri);
 
         try {
-            Rio.write(model, sink, format);
+            Rio.write(model, sink, format, writerConfig);
         } catch (RDFHandlerException e) {
             throw new TransmogWriterException("", e);//TODO
         }

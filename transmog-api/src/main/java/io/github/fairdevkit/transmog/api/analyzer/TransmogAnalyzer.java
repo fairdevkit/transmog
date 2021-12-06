@@ -23,10 +23,11 @@
  */
 package io.github.fairdevkit.transmog.api.analyzer;
 
+import io.github.fairdevkit.transmog.api.Configurable;
 import io.github.fairdevkit.transmog.spi.TransmogModule;
 import io.github.fairdevkit.transmog.spi.analyzer.ClassAnalysis;
 
-public interface TransmogAnalyzer extends TransmogModule.Context {
+public interface TransmogAnalyzer extends TransmogModule.Context, Configurable {
     ClassAnalysis analyze(Class<?> type);
 
     default ClassAnalysis analyze(Object object) {

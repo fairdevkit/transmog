@@ -23,6 +23,7 @@
  */
 package io.github.fairdevkit.transmog.core;
 
+import io.github.fairdevkit.transmog.api.TransmogConfig;
 import io.github.fairdevkit.transmog.api.TransmogMapper;
 import io.github.fairdevkit.transmog.api.analyzer.TransmogAnalyzer;
 import io.github.fairdevkit.transmog.core.analyzer.CoreTransmogAnalyzer;
@@ -38,6 +39,7 @@ public class CoreTransmogMapper implements TransmogMapper<InputStream, OutputStr
     private final TransmogAnalyzer analyzer;
     private final CoreTransmogReader reader;
     private final CoreTransmogWriter writer;
+    private TransmogConfig config;
 
     public CoreTransmogMapper() {
         this(new CoreTransmogAnalyzer());
@@ -47,6 +49,8 @@ public class CoreTransmogMapper implements TransmogMapper<InputStream, OutputStr
         this.analyzer = analyzer;
         reader = new CoreTransmogReader(analyzer);
         writer = new CoreTransmogWriter(analyzer);
+
+        configure(new TransmogConfig());
     }
 
     @Override
@@ -57,8 +61,17 @@ public class CoreTransmogMapper implements TransmogMapper<InputStream, OutputStr
     }
 
     @Override
+    public void configure(TransmogConfig config) {
+        this.config = config;
+
+        analyzer.configure(config);
+        reader.configure(config);
+        writer.configure(config);
+    }
+
+    @Override
     public <T> Optional<T> read(InputStream source, Class<T> clazz, CharSequence subject) {
-        return read(source, clazz, subject, RDFFormat.TURTLE);
+        return read(source, clazz, subject, config.get(CoreSettings.DEFAULT_READ_FORMAT));
     }
 
     public <T> Optional<T> read(InputStream source, Class<T> clazz, CharSequence subject, RDFFormat format) {
@@ -67,7 +80,7 @@ public class CoreTransmogMapper implements TransmogMapper<InputStream, OutputStr
 
     @Override
     public void write(Object source, OutputStream sink, CharSequence subject) {
-        write(source, sink, subject, RDFFormat.TURTLE);
+        write(source, sink, subject, config.get(CoreSettings.DEFAULT_WRITE_FORMAT));
     }
 
     public void write(Object source, OutputStream sink, CharSequence subject, RDFFormat format) {

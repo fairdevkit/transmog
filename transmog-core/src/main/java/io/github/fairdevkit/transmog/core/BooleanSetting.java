@@ -21,12 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.fairdevkit.transmog.api.reader;
+package io.github.fairdevkit.transmog.core;
 
-import io.github.fairdevkit.transmog.api.Configurable;
-import io.github.fairdevkit.transmog.spi.TransmogModule;
-import java.util.Optional;
+import io.github.fairdevkit.transmog.api.TransmogSetting;
 
-public interface TransmogReader<Source> extends TransmogModule.Context, Configurable {
-    <T> Optional<T> read(Source source, Class<T> clazz, CharSequence subject);
+public class BooleanSetting extends TransmogSetting<Boolean> {
+    public BooleanSetting(String key, boolean defaultValue) {
+        super(key, defaultValue);
+    }
 }

@@ -23,9 +23,11 @@
  */
 package io.github.fairdevkit.transmog.core.reader;
 
-import io.github.fairdevkit.transmog.api.reader.TransmogReader;
-import io.github.fairdevkit.transmog.spi.analyzer.FieldPropertyAnalysis;
+import io.github.fairdevkit.transmog.api.TransmogConfig;
 import io.github.fairdevkit.transmog.api.analyzer.TransmogAnalyzer;
+import io.github.fairdevkit.transmog.api.reader.TransmogReader;
+import io.github.fairdevkit.transmog.core.CoreSettings;
+import io.github.fairdevkit.transmog.spi.analyzer.FieldPropertyAnalysis;
 import io.github.fairdevkit.transmog.spi.reader.TransmogReaderException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,20 +41,28 @@ import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.Rio;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CoreTransmogReader implements TransmogReader<InputStream> {
-    private static final Logger logger = LoggerFactory.getLogger(CoreTransmogReader.class);
     private final TransmogAnalyzer analyzer;
+    private TransmogConfig config;
 
     public CoreTransmogReader(TransmogAnalyzer analyzer) {
+        this(analyzer, new TransmogConfig());
+    }
+
+    public CoreTransmogReader(TransmogAnalyzer analyzer, TransmogConfig config) {
         this.analyzer = analyzer;
+        this.config = config;
+    }
+
+    @Override
+    public void configure(TransmogConfig config) {
+        this.config = config;
     }
 
     @Override
     public <T> Optional<T> read(InputStream source, Class<T> clazz, CharSequence subject) {
-        return read(source, clazz, subject, RDFFormat.TURTLE);
+        return read(source, clazz, subject, config.get(CoreSettings.DEFAULT_READ_FORMAT));
     }
 
     public <T> Optional<T> read(InputStream source, Class<T> clazz, CharSequence subject, RDFFormat format) {

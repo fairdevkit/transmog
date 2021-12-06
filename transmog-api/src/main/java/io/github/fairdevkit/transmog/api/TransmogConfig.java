@@ -21,12 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.fairdevkit.transmog.api.reader;
+package io.github.fairdevkit.transmog.api;
 
-import io.github.fairdevkit.transmog.api.Configurable;
-import io.github.fairdevkit.transmog.spi.TransmogModule;
-import java.util.Optional;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public interface TransmogReader<Source> extends TransmogModule.Context, Configurable {
-    <T> Optional<T> read(Source source, Class<T> clazz, CharSequence subject);
+public class TransmogConfig {
+    private final Map<TransmogSetting<Object>, Object> settings;
+
+    public TransmogConfig() {
+        settings = new ConcurrentHashMap<>();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T get(TransmogSetting<T> setting) {
+        return (T)settings.getOrDefault(setting, setting.getDefaultValue());
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> TransmogConfig set(TransmogSetting<T> setting, T value) {
+        settings.put((TransmogSetting<Object>)setting, value);
+        return this;
+    }
 }
