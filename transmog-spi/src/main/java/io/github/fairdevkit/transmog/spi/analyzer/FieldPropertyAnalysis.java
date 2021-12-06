@@ -39,6 +39,7 @@ public abstract class FieldPropertyAnalysis<A extends Annotation> extends Annota
     private final Class<?> intrinsicType;
     private final MethodHandle accessor;
     private final ArgumentStrategy.Factory factory;
+    @Nullable
     private final ValueConverter<?> valueConverter;
     @Nullable
     private final WrapperHandler wrapperHandler;
@@ -52,7 +53,7 @@ public abstract class FieldPropertyAnalysis<A extends Annotation> extends Annota
         this.intrinsicType = Objects.requireNonNull(intrinsicType, errMsg("intrinsicType"));
         this.accessor = Objects.requireNonNull(accessor, errMsg("accessor"));
         this.factory = Objects.requireNonNull(factory, errMsg("factory"));
-        this.valueConverter = Objects.requireNonNull(valueConverter, errMsg("valueConverter"));
+        this.valueConverter = valueConverter;
         this.wrapperHandler = wrapperHandler;
         this.nested = nested;
     }
@@ -77,8 +78,8 @@ public abstract class FieldPropertyAnalysis<A extends Annotation> extends Annota
         return factory;
     }
 
-    public ValueConverter<?> getValueConverter() {
-        return valueConverter;
+    public Optional<ValueConverter<?>> getValueConverter() {
+        return Optional.ofNullable(valueConverter);
     }
 
     public Optional<WrapperHandler> getWrapperHandler() {

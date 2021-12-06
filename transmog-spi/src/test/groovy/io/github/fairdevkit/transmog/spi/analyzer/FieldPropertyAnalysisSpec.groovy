@@ -78,13 +78,7 @@ class FieldPropertyAnalysisSpec extends Specification {
         ex6.message == "Field analysis property 'factory' cannot be null"
 
         when:
-        builder.factory(Mock(ArgumentStrategy.Factory)).build()
-        then:
-        def ex7 = thrown NullPointerException
-        ex7.message == "Field analysis property 'valueConverter' cannot be null"
-
-        when:
-        def property = builder.valueConverter(Mock(ValueConverter)).build()
+        def property = builder.factory(Mock(ArgumentStrategy.Factory)).build()
         then:
         notThrown NullPointerException
     }

@@ -30,6 +30,7 @@ import io.github.fairdevkit.transmog.spi.reader.StringValueConverter
 import io.github.fairdevkit.transmog.spi.reader.TransmogReaderException
 import io.github.fairdevkit.transmog.test.Beans
 import io.github.fairdevkit.transmog.test.Constants
+import io.github.fairdevkit.transmog.test.Nesting
 import io.github.fairdevkit.transmog.test.Records
 import org.eclipse.rdf4j.model.Value
 import spock.lang.Ignore
@@ -168,5 +169,47 @@ class CoreTransmogReaderSpec extends Specification {
         with (record.get()) {
             value == Constants.LITERAL_FOO
         }
+    }
+
+    def "read a parent containing a child bean"() {
+        given:
+        def source = """\
+                @prefix ${Constants.PREFIX}: <${Constants.NS}> .
+
+                ex:1 ex:child ex:2 .
+                ex:2 ex:value "${Constants.LITERAL_FOO}" .
+                """.stripIndent()
+
+        when:
+        def parent = read source, Nesting.Parent, "http://example.com/1"
+
+        then:
+        with (parent.get()) {
+            with (child) {
+                it.value == Constants.LITERAL_FOO
+            }
+        }
+    }
+
+    def "read a self-referencing node bean"() {
+        given:
+        def source = """\
+                @prefix ${Constants.PREFIX}: <${Constants.NS}> .
+                
+                ex:1 ex:node ex:2 .
+                ex:2 ex:node ex:3 .
+                ex:3 ex:node ex:4 .
+                ex:4 ex:value "${Constants.LITERAL_FOO}" .
+                """.stripIndent()
+
+        when:
+        def node = read source, Nesting.Node, "http://example.com/1"
+
+        then:
+        def ex1 = node.get()
+        def ex2 = ex1.node
+        def ex3 = ex2.node
+        def ex4 = ex3.node
+        ex4.value == Constants.LITERAL_FOO
     }
 }

@@ -119,7 +119,7 @@ public class CoreTransmogReader implements TransmogReader<InputStream> {
 
                 readInternal(model, type, (Resource)object).ifPresent(strategy::add);
             } else {
-                var converter = property.getValueConverter();
+                var converter = property.getValueConverter().orElseThrow();//TODO
                 var value = converter.convert(object);
                 strategy.add(value);
             }

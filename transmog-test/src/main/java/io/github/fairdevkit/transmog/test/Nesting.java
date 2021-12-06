@@ -23,22 +23,31 @@
  */
 package io.github.fairdevkit.transmog.test;
 
-import org.eclipse.rdf4j.model.Namespace;
-import org.eclipse.rdf4j.model.impl.SimpleNamespace;
+import io.github.fairdevkit.transmog.annotations.Predicate;
+import io.github.fairdevkit.transmog.annotations.Subject;
+import lombok.Data;
 
-public interface Constants {
-    String NS = "http://example.com/";
-    String PREFIX = "ex";
-    Namespace NAMESPACE = new SimpleNamespace(PREFIX, NS);
+public interface Nesting extends Constants {
+    @Data
+    class Parent {
+        @Predicate(PREDICATE_CHILD)
+        private Child child;
+    }
 
-    String PREDICATE_VALUE = NS + "value";
-    String PREDICATE_FLAG = NS + "flag";
-    String PREDICATE_CHILD = NS + "child";
-    String PREDICATE_PARENT = NS + "parent";
-    String PREDICATE_NODE = NS + "node";
+    @Data
+    @Subject(value = "child", relative = true)
+    class Child {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private String value;
+    }
 
-    String TYPE_EXAMPLE = NS + "Example";
-
-    String LITERAL_FOO = "foo";
-    String LITERAL_BAR = "bar";
+    @Data
+    class Node {
+        @Subject
+        private String subject;
+        @Predicate(value = PREDICATE_NODE, required = false)
+        private Node node;
+        @Predicate(value = PREDICATE_VALUE, literal = true, required = false)
+        private String value;
+    }
 }
