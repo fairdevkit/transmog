@@ -24,27 +24,26 @@
 package io.github.fairdevkit.transmog.test;
 
 import io.github.fairdevkit.transmog.annotations.Predicate;
+import java.util.Objects;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 public interface Builders extends Constants {
     @Getter
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     class StringPropertyBuilder {
         @Predicate(value = PREDICATE_VALUE, literal = true)
         private final String value;
-
-        private StringPropertyBuilder(String value) {
-            this.value = value;
-        }
 
         public static Builder builder() {
             return new Builder();
         }
 
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         public static class Builder {
             private String value;
-
-            private Builder() {
-            }
 
             public Builder value(String value) {
                 this.value = value;
@@ -53,6 +52,54 @@ public interface Builders extends Constants {
 
             public StringPropertyBuilder build() {
                 return new StringPropertyBuilder(value);
+            }
+        }
+    }
+
+    @Getter
+    class NullCheckingCtorTargetBuilder {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private final String value;
+
+        private NullCheckingCtorTargetBuilder(String value) {
+            this.value = Objects.requireNonNull(value, "value property cannot be null");
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class Builder {
+            private String value;
+
+            public Builder value(String value) {
+                this.value = value;
+                return this;
+            }
+
+            public NullCheckingCtorTargetBuilder build() {
+                return new NullCheckingCtorTargetBuilder(value);
+            }
+        }
+    }
+
+    interface Invalid {
+        @Getter
+        @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+        class ThrowingBuilderProperty {
+            @Predicate(value = PREDICATE_VALUE, literal = true)
+            private final String value;
+
+            public static Builder builder() {
+                return new Builder();
+            }
+
+            @NoArgsConstructor(access = AccessLevel.PRIVATE)
+            public static class Builder {
+                public Builder value(String value) {
+                    throw new IllegalStateException("for testing");
+                }
             }
         }
     }

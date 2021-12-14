@@ -21,29 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.fairdevkit.transmog.bean
+package io.github.fairdevkit.transmog.test;
 
-import io.github.fairdevkit.transmog.test.Beans
-import io.github.fairdevkit.transmog.test.Builders
-import io.github.fairdevkit.transmog.test.Constructors
-import io.github.fairdevkit.transmog.test.Records
-import spock.lang.Specification
+import io.github.fairdevkit.transmog.annotations.Predicate;
+import java.beans.ConstructorProperties;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-class BeanInstanceStrategyFactorySpec extends Specification {
-    /** System under test */
-    def factory = new BeanInstanceStrategy.Factory()
-
-    def "test for bean type candidates"() {
-        expect:
-        factory.supports(type) == result
-
-        where:
-        type                                   || result
-        Builders.StringPropertyBuilder         || false
-        Records.StringPropertyRecord           || false
-        Constructors.StringPropertyConstructor || false
-        Beans.Invalid.PrivateConstructor       || false
-        Beans.Invalid.ArgConstructor           || false
-        Beans.StringPropertyBean               || true
+public interface Constructors extends Constants {
+    @Data
+    @RequiredArgsConstructor(onConstructor_ = @ConstructorProperties("value"))
+    class StringPropertyConstructor {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private final String value;
     }
 }

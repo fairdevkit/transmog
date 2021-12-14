@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.fairdevkit.transmog.bean
+package io.github.fairdevkit.transmog.builder
 
 import io.github.fairdevkit.transmog.test.Beans
 import io.github.fairdevkit.transmog.test.Builders
@@ -29,21 +29,19 @@ import io.github.fairdevkit.transmog.test.Constructors
 import io.github.fairdevkit.transmog.test.Records
 import spock.lang.Specification
 
-class BeanInstanceStrategyFactorySpec extends Specification {
+class BuilderInstanceStrategyFactorySpec extends Specification {
     /** System under test */
-    def factory = new BeanInstanceStrategy.Factory()
+    def factory = new BuilderInstanceStrategy.Factory()
 
-    def "test for bean type candidates"() {
+    def "test for builder candidates"() {
         expect:
         factory.supports(type) == result
 
         where:
         type                                   || result
-        Builders.StringPropertyBuilder         || false
+        Beans.StringPropertyBean               || false
         Records.StringPropertyRecord           || false
         Constructors.StringPropertyConstructor || false
-        Beans.Invalid.PrivateConstructor       || false
-        Beans.Invalid.ArgConstructor           || false
-        Beans.StringPropertyBean               || true
+        Builders.StringPropertyBuilder         || true
     }
 }
