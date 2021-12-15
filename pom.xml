@@ -49,6 +49,7 @@
         <module>transmog-support-bean</module>
         <module>transmog-support-record</module>
         <module>transmog-support-builder</module>
+        <module>transmog-support-constructor</module>
         <module>transmog-test</module>
     </modules>
 

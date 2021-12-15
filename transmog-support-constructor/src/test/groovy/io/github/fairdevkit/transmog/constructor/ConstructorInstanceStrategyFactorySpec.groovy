@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.fairdevkit.transmog.record
+package io.github.fairdevkit.transmog.constructor
 
 import io.github.fairdevkit.transmog.test.Beans
 import io.github.fairdevkit.transmog.test.Builders
@@ -29,11 +29,11 @@ import io.github.fairdevkit.transmog.test.Constructors
 import io.github.fairdevkit.transmog.test.Records
 import spock.lang.Specification
 
-class RecordInstanceStrategyFactorySpec extends Specification {
+class ConstructorInstanceStrategyFactorySpec extends Specification {
     /** System under test */
-    def factory = new RecordInstanceStrategy.Factory()
+    def factory = new ConstructorInstanceStrategy.Factory()
 
-    def "test for record type candidates"() {
+    def "test for constructor type candidates"() {
         expect:
         factory.supports(type) == result
 
@@ -41,8 +41,7 @@ class RecordInstanceStrategyFactorySpec extends Specification {
         type                                   || result
         Beans.StringPropertyBean               || false
         Builders.StringPropertyBuilder         || false
-        Constructors.StringPropertyConstructor || false
-        Records.StringPropertyRecord           || true
-        Records.DefaultValueConstructorRecord  || true
+        Records.StringPropertyRecord           || false
+        Constructors.StringPropertyConstructor || true
     }
 }

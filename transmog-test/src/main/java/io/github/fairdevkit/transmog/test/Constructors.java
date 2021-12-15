@@ -35,4 +35,41 @@ public interface Constructors extends Constants {
         @Predicate(value = PREDICATE_VALUE, literal = true)
         private final String value;
     }
+
+    interface Invalid {
+        @Data
+        class MissingAnnotation {
+            @Predicate(value = PREDICATE_VALUE, literal = true)
+            private final String value;
+        }
+
+        @Data
+        @RequiredArgsConstructor(onConstructor_ = @ConstructorProperties("value"))
+        class MissingAnnotationAttribute {
+            @Predicate(value = PREDICATE_VALUE, literal = true)
+            private final String value;
+            @Predicate(value = PREDICATE_FLAG, literal = true, datatype = "http://www.w3.org/2001/XMLSchema#boolean")
+            private final boolean flag;
+        }
+
+        @Data
+        // lombok bug, check for fix in versions newer than 1.18.22
+        // https://github.com/projectlombok/lombok/issues/3040
+        //@RequiredArgsConstructor(onConstructor_ = @ConstructorProperties({ "value", "flag" }))
+        class SuperfluousAttributes {
+            @Predicate(value = PREDICATE_FLAG, literal = true)
+            private final String value;
+
+            @ConstructorProperties({ "value", "flag" })
+            public SuperfluousAttributes(String value) {
+                this.value = value;
+            }
+        }
+
+        @RequiredArgsConstructor(onConstructor_ = @ConstructorProperties("value"))
+        class AbsentGetter {
+            @Predicate(value = PREDICATE_VALUE, literal = true)
+            private final String value;
+        }
+    }
 }
