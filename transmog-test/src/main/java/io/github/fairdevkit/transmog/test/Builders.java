@@ -84,6 +84,51 @@ public interface Builders extends Constants {
         }
     }
 
+    @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+    @Getter
+    abstract class AbstractParentBuilder {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private final String value;
+
+        @NoArgsConstructor(access = AccessLevel.PROTECTED)
+        protected static abstract class Builder {
+            protected String value;
+
+            public Builder value(String value) {
+                this.value = value;
+                return this;
+            }
+        }
+    }
+
+    @Getter
+    class ExtendingChildBuilder extends AbstractParentBuilder {
+        @Predicate(value = PREDICATE_FLAG, literal = true, datatype = "")
+        private final Boolean flag;
+
+        private ExtendingChildBuilder(String value, boolean flag) {
+            super(value);
+            this.flag = flag;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder extends AbstractParentBuilder.Builder {
+            private Boolean flag;
+
+            public Builder flag(boolean flag) {
+                this.flag = flag;
+                return this;
+            }
+
+            public ExtendingChildBuilder build() {
+                return new ExtendingChildBuilder(value, flag);
+            }
+        }
+    }
+
     interface Invalid {
         @Getter
         @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

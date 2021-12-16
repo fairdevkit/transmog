@@ -24,7 +24,6 @@
 package io.github.fairdevkit.transmog.test;
 
 import io.github.fairdevkit.transmog.annotations.Predicate;
-import io.github.fairdevkit.transmog.annotations.SemanticType;
 import java.util.Collection;
 import java.util.Optional;
 import lombok.Data;
@@ -144,6 +143,18 @@ public interface Beans extends Constants {
         private String value;
         @Predicate(value = PREDICATE_FLAG, literal = true, datatype = "http://www.w3.org/2001/XMLSchema#boolean")
         private boolean flag;
+    }
+
+    @Data
+    abstract class AbstractParentBean {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private String value;
+    }
+
+    @Data
+    class ExtendingChildBean extends AbstractParentBean {
+        @Predicate(value = PREDICATE_FLAG, literal = true, datatype = "http://www.w3.org/2001/XMLSchema#boolean")
+        private Boolean flag;
     }
 
     interface Invalid {

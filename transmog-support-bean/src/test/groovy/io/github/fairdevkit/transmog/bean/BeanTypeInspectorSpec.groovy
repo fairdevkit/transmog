@@ -32,7 +32,6 @@ import io.github.fairdevkit.transmog.test.Builders
 import io.github.fairdevkit.transmog.test.Constants
 import io.github.fairdevkit.transmog.test.Records
 import spock.lang.Specification
-import java.util.stream.Stream
 
 class BeanTypeInspectorSpec extends Specification {
     /** System under test */

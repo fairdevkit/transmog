@@ -33,6 +33,13 @@ import java.beans.ConstructorProperties
 class ConstructorInstanceStrategySpec extends Specification {
     @Shared factory = new ConstructorInstanceStrategy.Factory()
 
+    // convenience closure
+    def property = { index = 0 ->
+        Mock(ConstructorPropertyAnalysis) {
+            getIndex() >> index
+        }
+    }
+
     def "test"() {
         when:
         factory.create(Constructors.Invalid.MissingAnnotation)
@@ -59,16 +66,29 @@ class ConstructorInstanceStrategySpec extends Specification {
     def "create a constructor based string property"() {
         given:
         def strategy = factory.create(Constructors.StringPropertyConstructor)
-        def property = Mock(ConstructorPropertyAnalysis) {
-            getIndex() >> 0
-        }
 
         when:
-        strategy.add(property, Constants.LITERAL_FOO)
+        strategy.add(property(), Constants.LITERAL_FOO)
 
         then:
         with (strategy.create()) {
             value == Constants.LITERAL_FOO
+        }
+    }
+
+    def "create a child type constructor"() {
+        given:
+        def strategy = factory.create Constructors.ChildConstructor
+
+        when:
+        strategy.add(property(), Constants.LITERAL_FOO)
+        and:
+        strategy.add(property(1), true)
+
+        then:
+        with (strategy.create()) {
+            value == Constants.LITERAL_FOO
+            flag == true
         }
     }
 }

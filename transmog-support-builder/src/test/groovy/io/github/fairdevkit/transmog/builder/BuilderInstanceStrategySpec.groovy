@@ -85,4 +85,22 @@ class BuilderInstanceStrategySpec extends Specification {
             value == Constants.LITERAL_FOO
         }
     }
+
+    def "create a child extending an abstract base class builder through the strategy"() {
+        given:
+        def strategy = factory.create Builders.ExtendingChildBuilder
+        def valueProperty = property Builders.ExtendingChildBuilder.Builder
+        def flagProperty = property Builders.ExtendingChildBuilder.Builder, "flag"
+
+        when:
+        strategy.add(valueProperty, Constants.LITERAL_FOO)
+        and:
+        strategy.add(flagProperty, true)
+
+        then:
+        with (strategy.create()) {
+            value == Constants.LITERAL_FOO
+            flag == true
+        }
+    }
 }

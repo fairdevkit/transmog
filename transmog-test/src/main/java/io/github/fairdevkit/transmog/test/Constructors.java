@@ -26,6 +26,7 @@ package io.github.fairdevkit.transmog.test;
 import io.github.fairdevkit.transmog.annotations.Predicate;
 import java.beans.ConstructorProperties;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 public interface Constructors extends Constants {
@@ -34,6 +35,36 @@ public interface Constructors extends Constants {
     class StringPropertyConstructor {
         @Predicate(value = PREDICATE_VALUE, literal = true)
         private final String value;
+    }
+
+    @Data
+    @RequiredArgsConstructor(onConstructor_ = @ConstructorProperties("value"))
+    abstract class ParentConstructor {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private final String value;
+    }
+
+    @Getter
+    class ChildConstructor extends ParentConstructor {
+        @Predicate(value = PREDICATE_FLAG, literal = true, datatype = "http://www.w3.org/2001/XMLSchema#boolean")
+        private final boolean flag;
+
+        @ConstructorProperties({ "value", "flag" })
+        public ChildConstructor(String value, boolean flag) {
+            super(value);
+            this.flag = flag;
+        }
+    }
+
+    @Getter
+    class Foo {
+        @Predicate(value = PREDICATE_VALUE, literal = true)
+        private final String value;
+
+        @ConstructorProperties("value")
+        public Foo(String foo) {
+            this.value = foo;
+        }
     }
 
     interface Invalid {
