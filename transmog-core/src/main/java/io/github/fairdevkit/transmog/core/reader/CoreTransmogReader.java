@@ -23,6 +23,8 @@
  */
 package io.github.fairdevkit.transmog.core.reader;
 
+import io.github.fairdevkit.transmog.annotations.SemanticType;
+import io.github.fairdevkit.transmog.annotations.Subject;
 import io.github.fairdevkit.transmog.api.TransmogConfig;
 import io.github.fairdevkit.transmog.api.analyzer.TransmogAnalyzer;
 import io.github.fairdevkit.transmog.api.reader.TransmogReader;
@@ -33,11 +35,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.Set;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.Models;
 import org.eclipse.rdf4j.model.util.Values;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.Rio;
@@ -87,6 +91,39 @@ public class CoreTransmogReader implements TransmogReader<InputStream> {
         var factory = analysis.factory();
         var strategy = factory.create(clazz);
 
+        // check for types
+        analysis.types()
+                .stream()
+                .filter(property -> property instanceof FieldPropertyAnalysis)
+                .map(property -> (FieldPropertyAnalysis<SemanticType>)property)
+                .forEach(property -> {
+                    var statements = Models.getPropertyIRIs(model, subject, RDF.TYPE);
+                    var argument = readArgument(property, statements, model);
+                    strategy.add(property, argument);
+                });
+
+        // check for subject
+        Optional.ofNullable(analysis.subject())
+                .filter(property -> property instanceof FieldPropertyAnalysis)
+                .map(property -> (FieldPropertyAnalysis<Subject>)property)
+                .ifPresent(property -> {
+                    var argumentStrategy = property.getFactory().create(property, 1);
+
+                    // TODO set the localname if relative attribute is true?
+                    if (property.getAnnotation().relative()) {
+                        if (subject instanceof IRI iri) {
+                            iri.getLocalName();
+                        }
+                    }
+
+                    var argument = property.getValueConverter()
+                            .map(converter -> converter.convert(subject))
+                            .orElseThrow(() -> new TransmogReaderException(""));//TODO
+                    argumentStrategy.add(argument);
+                    strategy.add(property, argumentStrategy.create());
+                });
+
+        // check for predicates
         for (var property : analysis.predicates()) {
             var annotation = property.getAnnotation();
             var predicate = Values.iri(annotation.value());
@@ -94,7 +131,7 @@ public class CoreTransmogReader implements TransmogReader<InputStream> {
 
             if (objects.isEmpty()) {
                 if (!annotation.readonly() && annotation.required()) {
-                    throw new TransmogReaderException("Could not find required property " + annotation.value());
+                    throw new TransmogReaderException("Could not find required property " + predicate);
                 } else {
                     continue;
                 }

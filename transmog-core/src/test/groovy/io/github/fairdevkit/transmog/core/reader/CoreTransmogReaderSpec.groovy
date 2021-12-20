@@ -32,10 +32,14 @@ import io.github.fairdevkit.transmog.test.Beans
 import io.github.fairdevkit.transmog.test.Constants
 import io.github.fairdevkit.transmog.test.Nesting
 import io.github.fairdevkit.transmog.test.Records
+import io.github.fairdevkit.transmog.test.SemanticTypes
+import io.github.fairdevkit.transmog.test.Subjects
 import org.eclipse.rdf4j.model.Value
+import org.eclipse.rdf4j.model.vocabulary.RDF
 import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
+import java.util.function.Function
 
 class CoreTransmogReaderSpec extends Specification {
     @Shared analyzer = new CoreTransmogAnalyzer()
@@ -211,5 +215,45 @@ class CoreTransmogReaderSpec extends Specification {
         def ex3 = ex2.node
         def ex4 = ex3.node
         ex4.value == Constants.LITERAL_FOO
+    }
+
+    def "confirm an absolute subject property is set"() {
+        given:
+        def source = triples iri(Constants.SUBJECT_1), iri(Constants.PREDICATE_VALUE), literal(Constants.LITERAL_FOO)
+
+        when:
+        def bean = read source, Subjects.PropertyAbsoluteSubject, Constants.SUBJECT_1
+
+        then:
+        with (bean.get()) {
+            subject == Constants.SUBJECT_1
+            value == Constants.LITERAL_FOO
+        }
+    }
+
+    def "confirm a single semantic type is set for the annotated property"() {
+        given:
+        def source = triples iri(Constants.SUBJECT_1), "a", iri(Constants.TYPE_EXAMPLE)
+        
+        when:
+        def bean = read source, SemanticTypes.PropertySemanticType, Constants.SUBJECT_1
+
+        then:
+        with (bean.get()) {
+            type == Constants.TYPE_EXAMPLE
+        }
+    }
+
+    def "confirm multiple semantic types are set for the annotated property"() {
+        given:
+        def source = triples iri(Constants.SUBJECT_1), "a", [ iri(Constants.TYPE_EXAMPLE), iri(Constants.TYPE_OTHER) ]
+
+        when:
+        def bean = read source, SemanticTypes.PropertyMultipleSemanticTypes, Constants.SUBJECT_1
+
+        then:
+        with (bean.get()) {
+            types == [ Constants.TYPE_OTHER, Constants.TYPE_EXAMPLE ] // TODO: different order than expected
+        }
     }
 }

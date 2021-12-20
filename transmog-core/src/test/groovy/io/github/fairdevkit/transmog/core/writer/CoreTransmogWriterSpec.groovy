@@ -26,10 +26,9 @@ package io.github.fairdevkit.transmog.core.writer
 import io.github.fairdevkit.transmog.core.SpiTransmogModule
 import io.github.fairdevkit.transmog.core.analyzer.CoreTransmogAnalyzer
 import io.github.fairdevkit.transmog.spi.BaseTransmogModule
-import io.github.fairdevkit.transmog.test.Beans
-import io.github.fairdevkit.transmog.test.Constants
-import io.github.fairdevkit.transmog.test.Nesting
+import io.github.fairdevkit.transmog.test.*
 import org.eclipse.rdf4j.model.Value
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -179,5 +178,68 @@ class CoreTransmogWriterSpec extends Specification {
                 
                 ex:3 ex:value "${Constants.LITERAL_FOO}" .
                 """.stripIndent()
+    }
+
+    def "write property level provided subjects"() {
+        given:
+        bean.subject = subjectPropertyValue
+        bean.value = Constants.LITERAL_FOO
+
+        when:
+        def rdf = write bean, subject
+
+        then:
+        rdf == """\
+                
+                <$subject> <${Constants.PREDICATE_VALUE}> "${Constants.LITERAL_FOO}" .
+                """.stripIndent()
+
+        where:
+        bean                                                  | subjectPropertyValue || subject
+        new Subjects.PropertyAbsoluteSubject()                | Constants.SUBJECT_1  || Constants.SUBJECT_1
+        new Subjects.PropertyRelativeSubject()                | "foo"                || Constants.SUBJECT_1 + "#foo"
+        new Subjects.PropertyRelativeSubjectCustomSeparator() | "foo"                || Constants.SUBJECT_1 + ":foo"
+    }
+
+    def "write type level provided semantic types"() {
+        given:
+        writer.registerNamespace(Constants.NAMESPACE)
+
+        when:
+        def rdf = write bean, Constants.SUBJECT_1
+
+        then:
+        rdf == """\
+                @prefix ${Constants.PREFIX}: <${Constants.NS}> .
+                
+                ex:1 a $type .
+                """.stripIndent()
+
+        where:
+        bean                                                                                                   || type
+        new SemanticTypes.TypeSemanticType()                                                                   || "ex:Example"
+        new SemanticTypes.TypeMultipleSemanticTypes()                                                          || "ex:Example, ex:Other"
+    }
+
+    def "write property level provided semantic types"() {
+        given:
+        bean."set${property.capitalize()}"(*values)
+        and:
+        writer.registerNamespace(Constants.NAMESPACE)
+
+        when:
+        def rdf = write bean, Constants.SUBJECT_1
+
+        then:
+        rdf == """\
+                @prefix ${Constants.PREFIX}: <${Constants.NS}> .
+                
+                ex:1 a $writtenTypes .
+                """.stripIndent()
+
+        where:
+        bean                                              | property | values                                           || writtenTypes
+        new SemanticTypes.PropertySemanticType()          | "type"   | [ Constants.TYPE_EXAMPLE ]                       || "ex:Example"
+        new SemanticTypes.PropertyMultipleSemanticTypes() | "types"  | [ Constants.TYPE_EXAMPLE, Constants.TYPE_OTHER ] || "ex:Example, ex:Other"
     }
 }

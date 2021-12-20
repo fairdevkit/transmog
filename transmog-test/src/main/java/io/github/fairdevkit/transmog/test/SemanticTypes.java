@@ -23,25 +23,27 @@
  */
 package io.github.fairdevkit.transmog.test;
 
-import org.eclipse.rdf4j.model.Namespace;
-import org.eclipse.rdf4j.model.impl.SimpleNamespace;
+import io.github.fairdevkit.transmog.annotations.SemanticType;
+import lombok.Data;
 
-public interface Constants {
-    String NS = "http://example.com/";
-    String PREFIX = "ex";
-    Namespace NAMESPACE = new SimpleNamespace(PREFIX, NS);
+public interface SemanticTypes extends Constants {
+    @SemanticType(TYPE_EXAMPLE)
+    class TypeSemanticType {
+    }
 
-    String PREDICATE_VALUE = NS + "value";
-    String PREDICATE_FLAG = NS + "flag";
-    String PREDICATE_CHILD = NS + "child";
-    String PREDICATE_PARENT = NS + "parent";
-    String PREDICATE_NODE = NS + "node";
+    @SemanticType({ TYPE_EXAMPLE, TYPE_OTHER })
+    class TypeMultipleSemanticTypes {
+    }
 
-    String SUBJECT_1 = NS + "1";
+    @Data
+    class PropertySemanticType {
+        @SemanticType
+        private String type;
+    }
 
-    String TYPE_EXAMPLE = NS + "Example";
-    String TYPE_OTHER = NS + "Other";
-
-    String LITERAL_FOO = "foo";
-    String LITERAL_BAR = "bar";
+    @Data
+    class PropertyMultipleSemanticTypes {
+        @SemanticType
+        private String[] types;
+    }
 }

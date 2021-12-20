@@ -80,7 +80,7 @@
         <!-- test -->
         <groovy.version>3.0.9</groovy.version>
         <spock.version>2.1-M2-groovy-3.0</spock.version>
-        <gmavenplus.version>1.13.0</gmavenplus.version>
+        <gmavenplus.version>1.13.1</gmavenplus.version>
         <bytebuddy.version>1.12.1</bytebuddy.version>
         <objenesis.version>3.2</objenesis.version>
         <surefire.version>3.0.0-M5</surefire.version>
