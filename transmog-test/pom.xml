@@ -39,6 +39,9 @@
     <properties>
         <!-- project settings -->
         <spotbugs.excludeFilterFile>spotbugs-exclude.xml</spotbugs.excludeFilterFile>
+        <!-- Skip javadoc to prevent an error during javadoc generation where certain lombok
+             symbols are not available. -->
+        <maven.javadoc.skip>true</maven.javadoc.skip>
 
         <!-- compile -->
         <lombok.version>1.18.22</lombok.version>
